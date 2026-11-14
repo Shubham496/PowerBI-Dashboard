@@ -1,0 +1,58 @@
+table subcategory
+	isHidden
+	lineageTag: 015be4c5-771b-4c20-99ee-383d4a1a9c68
+
+	column ProductSubcategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a8862b9f-b8a9-4cd8-8ed1-bf914eac72e4
+		summarizeBy: count
+		sourceColumn: ProductSubcategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SubcategoryName
+		dataType: string
+		isHidden
+		lineageTag: ff41d582-7431-4e68-9d2a-98028bbb7872
+		summarizeBy: none
+		sourceColumn: SubcategoryName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0f04dd59-3e45-4b9a-9923-c11ad1edaad0
+		summarizeBy: count
+		sourceColumn: ProductCategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition subcategory = m
+		mode: import
+		queryGroup: baseProductGroup
+		source =
+				let
+				    Source = Folder.Files(folderAddress),
+				    #"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Product Subcategories Lookup csv" = Source{[#"Folder Path"=folderAddress,Name="AdventureWorks Product Subcategories Lookup.csv"]}[Content],
+				    #"Imported CSV" = Csv.Document(#"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Product Subcategories Lookup csv",[Delimiter=",", Columns=3, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ProductSubcategoryKey", Int64.Type}, {"SubcategoryName", type text}, {"ProductCategoryKey", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

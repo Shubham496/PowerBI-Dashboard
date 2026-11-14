@@ -1,0 +1,84 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "f2b1c2d3e4f506070806",
+  "position": {
+    "x": 30,
+    "y": 735,
+    "z": 5,
+    "height": 315,
+    "width": 910,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "donutChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "HierarchyLevel": {
+                  "Expression": {
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Products lookup"
+                        }
+                      },
+                      "Hierarchy": "CategoryName Hierarchy"
+                    }
+                  },
+                  "Level": "CategoryName"
+                }
+              },
+              "queryRef": "Products lookup.CategoryName Hierarchy.CategoryName",
+              "nativeQueryRef": "CategoryName Hierarchy CategoryName",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Customer Lifetime Sales"
+                }
+              },
+              "queryRef": "zero.Customer Lifetime Sales",
+              "nativeQueryRef": "Customer Lifetime Sales"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Purchases by Product Category (Lifetime Spend)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

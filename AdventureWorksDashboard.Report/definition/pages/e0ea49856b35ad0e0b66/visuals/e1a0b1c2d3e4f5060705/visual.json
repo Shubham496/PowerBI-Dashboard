@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "e1a0b1c2d3e4f5060705",
+  "position": {
+    "x": 30,
+    "y": 95,
+    "z": 4,
+    "height": 130,
+    "width": 1860,
+    "tabOrder": 4
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "CY Return Quantity"
+                }
+              },
+              "queryRef": "zero.CY Return Quantity",
+              "nativeQueryRef": "CY Return Quantity"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Return Rate"
+                }
+              },
+              "queryRef": "zero.Return Rate",
+              "nativeQueryRef": "Return Rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Return Growth Formatted"
+                }
+              },
+              "queryRef": "zero.Return Growth Formatted",
+              "nativeQueryRef": "Return Growth Formatted"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "CY Est Return Cost"
+                }
+              },
+              "queryRef": "zero.CY Est Return Cost",
+              "nativeQueryRef": "CY Est Return Cost"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

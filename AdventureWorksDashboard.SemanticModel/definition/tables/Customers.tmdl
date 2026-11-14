@@ -1,0 +1,122 @@
+table Customers
+	lineageTag: 1d78131a-54e4-4c56-9223-c5b296d53de8
+
+	column CustomerKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 5a32631a-cdfb-4662-9b20-99a7713e40a3
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: c35765c4-d7f7-4068-b41b-9eca3103f4c7
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column BirthDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: da72dc81-7eaf-43a9-ab22-ea306001a6cc
+		summarizeBy: none
+		sourceColumn: BirthDate
+
+		variation Variation
+			isDefault
+			relationship: 3a437900-3a02-4af1-8843-adcdea4b3bf5
+			defaultHierarchy: LocalDateTable_d2e9fddf-31b6-48fb-9baf-731790f0f5a5.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column MaritalStatus
+		dataType: string
+		lineageTag: 6330ada6-f3b7-4489-8f1a-393825d45973
+		summarizeBy: none
+		sourceColumn: MaritalStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: 8decf0b1-20ee-4851-8f41-98378a496f56
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmailAddress
+		dataType: string
+		lineageTag: 0b6f3ecd-2929-42a2-9615-da151591972d
+		summarizeBy: none
+		sourceColumn: EmailAddress
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnnualIncome
+		dataType: int64
+		formatString: 0
+		lineageTag: 6d771e7d-c45f-4fe6-96e4-f0a40401197d
+		summarizeBy: sum
+		sourceColumn: AnnualIncome
+
+		annotation SummarizationSetBy = Automatic
+
+	column TotalChildren
+		dataType: int64
+		formatString: 0
+		lineageTag: a3ff0b55-7090-4c0b-90a4-e514ff97b934
+		summarizeBy: sum
+		sourceColumn: TotalChildren
+
+		annotation SummarizationSetBy = Automatic
+
+	column EducationLevel
+		dataType: string
+		lineageTag: 2fa86fa5-51e6-446e-a2c0-9b9a847e4970
+		summarizeBy: none
+		sourceColumn: EducationLevel
+
+		annotation SummarizationSetBy = Automatic
+
+	column Occupation
+		dataType: string
+		lineageTag: 273becc8-5d77-4b1f-9103-130430bd05c5
+		summarizeBy: none
+		sourceColumn: Occupation
+
+		annotation SummarizationSetBy = Automatic
+
+	column HomeOwner
+		dataType: string
+		lineageTag: 661dccda-0c68-46e5-a2a2-60e7d41a3beb
+		summarizeBy: none
+		sourceColumn: HomeOwner
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customers = m
+		mode: import
+		source =
+				let
+				    Source = Folder.Files(folderAddress),
+				    #"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Customer Lookup csv" = Source{[#"Folder Path"=folderAddress,Name="AdventureWorks Customer Lookup.csv"]}[Content],
+				    #"Imported CSV" = Csv.Document(#"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Customer Lookup csv",[Delimiter=",", Columns=13, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerKey", Int64.Type}, {"Prefix", type text}, {"FirstName", type text}, {"LastName", type text}, {"BirthDate", type date}, {"MaritalStatus", type text}, {"Gender", type text}, {"EmailAddress", type text}, {"AnnualIncome", Int64.Type}, {"TotalChildren", Int64.Type}, {"EducationLevel", type text}, {"Occupation", type text}, {"HomeOwner", type text}}),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Changed Type", {"CustomerKey"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Errors", each [CustomerKey] <> null and [CustomerKey] <> ""),
+				    #"Merged Columns" = Table.CombineColumns(#"Filtered Rows",{"Prefix", "FirstName", "LastName"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"Name"),
+				    #"Capitalized Each Word" = Table.TransformColumns(#"Merged Columns",{{"Name", Text.Proper, type text}})
+				in
+				    #"Capitalized Each Word"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

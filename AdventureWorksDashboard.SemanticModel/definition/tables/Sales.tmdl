@@ -1,0 +1,125 @@
+table Sales
+	lineageTag: aa6f372c-cd7d-427e-8ec6-07126dfe3a50
+
+	column OrderDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3ed13793-64d6-43b6-ae5f-4c6ad1a310df
+		summarizeBy: none
+		sourceColumn: OrderDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column StockDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: d54754c2-2b70-4390-813a-87610dc8cbf5
+		summarizeBy: none
+		sourceColumn: StockDate
+
+		variation Variation
+			isDefault
+			relationship: a3e076a6-4774-4a85-a568-0f0b47a838ba
+			defaultHierarchy: LocalDateTable_c96cbb3e-9258-4e77-9087-3d87c85e2e48.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OrderNumber
+		dataType: string
+		lineageTag: 09eb3fdb-f96f-4801-a341-3fb18128c70a
+		summarizeBy: none
+		sourceColumn: OrderNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductKey
+		dataType: int64
+		formatString: 0
+		lineageTag: ac30ccbe-041d-4be6-91c0-f15a92044056
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 7c58d5dc-38b3-4b02-aa5e-a69c23ed5f96
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column TerritoryKey
+		dataType: int64
+		formatString: 0
+		lineageTag: f05daa0f-71eb-42c7-bbe8-13736f6ae835
+		summarizeBy: none
+		sourceColumn: TerritoryKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderLineItem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d2ad16b3-03d2-4058-b34f-ff6c43480e33
+		summarizeBy: sum
+		sourceColumn: OrderLineItem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderQuantity
+		dataType: int64
+		formatString: 0
+		lineageTag: dd9bca6e-0886-4332-87dd-19ff6cb7cafe
+		summarizeBy: sum
+		sourceColumn: OrderQuantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductPrice = RELATED('Products lookup'[ProductPrice])
+		lineageTag: 2075f360-2bb6-4b96-9079-f3d1638966e6
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Sales = Sales[OrderQuantity] * Sales[ProductPrice]
+		lineageTag: ff94540a-ec38-4a5e-8355-28ac9fd2a131
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ProductCost = RELATED('Products lookup'[ProductCost])
+		lineageTag: 1a6c2c5d-56d0-42c3-af0f-29b96d0ad1cc
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = Table.Combine({#"Sales 2022", #"Sales 2021", #"Sales 2020"})
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

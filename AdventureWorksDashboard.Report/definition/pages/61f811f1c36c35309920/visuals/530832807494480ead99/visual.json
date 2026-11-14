@@ -1,0 +1,237 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "530832807494480ead99",
+  "position": {
+    "x": 29.53846153846154,
+    "y": 705.23076923076928,
+    "z": 8,
+    "height": 345.23076923076923,
+    "width": 1150.1538461538462,
+    "tabOrder": 8
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "HierarchyLevel": {
+                  "Expression": {
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Products lookup"
+                        }
+                      },
+                      "Hierarchy": "CategoryName Hierarchy"
+                    }
+                  },
+                  "Level": "SubcategoryName"
+                }
+              },
+              "queryRef": "Products lookup.CategoryName Hierarchy.SubcategoryName",
+              "nativeQueryRef": "CategoryName Hierarchy SubcategoryName",
+              "active": true
+            },
+            {
+              "field": {
+                "HierarchyLevel": {
+                  "Expression": {
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Products lookup"
+                        }
+                      },
+                      "Hierarchy": "CategoryName Hierarchy"
+                    }
+                  },
+                  "Level": "ProductName"
+                }
+              },
+              "queryRef": "Products lookup.CategoryName Hierarchy.ProductName",
+              "nativeQueryRef": "CategoryName Hierarchy ProductName",
+              "active": false
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "CY Sales"
+                }
+              },
+              "queryRef": "zero.CY Sales",
+              "nativeQueryRef": "CY Sales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "PY Sales"
+                }
+              },
+              "queryRef": "zero.PY Sales",
+              "nativeQueryRef": "PY Sales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Sales Growth Formatted"
+                }
+              },
+              "queryRef": "zero.Sales Growth Formatted",
+              "nativeQueryRef": "Sales Growth Formatted"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "CY Quantity"
+                }
+              },
+              "queryRef": "zero.CY Quantity",
+              "nativeQueryRef": "CY Quantity"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Quantity Growth"
+                }
+              },
+              "queryRef": "zero.Quantity Growth",
+              "nativeQueryRef": "Quantity Growth"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "CY Gross Profit"
+                }
+              },
+              "queryRef": "zero.CY Gross Profit",
+              "nativeQueryRef": "CY Gross Profit"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "CY Gross Margin"
+                }
+              },
+              "queryRef": "zero.CY Gross Margin",
+              "nativeQueryRef": "CY Gross Margin"
+            }
+          ]
+        }
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "Products lookup.CategoryName Hierarchy.SubcategoryName"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Products lookup"
+                    }
+                  },
+                  "Property": "SubcategoryName"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Products lookup.CategoryName Hierarchy.ProductName"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {}
+      }
+    ],
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Product Performance Matrix (Category > Subcategory)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

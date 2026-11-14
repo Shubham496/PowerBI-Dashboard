@@ -1,0 +1,385 @@
+{
+  "profile": "tabular-data-package",
+  "name": "adventureworks-csv",
+  "title": "AdventureWorks CSV Data",
+  "description": "Shared schema and resource manifest for the AdventureWorks CSV files.",
+  "resources": [
+    {
+      "name": "calendar-lookup",
+      "path": "AdventureWorks Calendar Lookup.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "Date", "type": "date", "format": "%Y-%m-%d" }
+        ],
+        "primaryKey": "Date"
+      }
+    },
+    {
+      "name": "customer-lookup",
+      "path": "AdventureWorks Customer Lookup.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "CustomerKey", "type": "integer" },
+          { "name": "Prefix", "type": "string" },
+          { "name": "FirstName", "type": "string" },
+          { "name": "LastName", "type": "string" },
+          { "name": "BirthDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "MaritalStatus", "type": "string" },
+          { "name": "Gender", "type": "string" },
+          { "name": "EmailAddress", "type": "string", "format": "email" },
+          { "name": "AnnualIncome", "type": "integer" },
+          { "name": "TotalChildren", "type": "integer" },
+          { "name": "EducationLevel", "type": "string" },
+          { "name": "Occupation", "type": "string" },
+          { "name": "HomeOwner", "type": "string" }
+        ],
+        "primaryKey": "CustomerKey"
+      }
+    },
+    {
+      "name": "product-category-lookup",
+      "path": "AdventureWorks Product Categories Lookup.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "ProductCategoryKey", "type": "integer" },
+          { "name": "CategoryName", "type": "string" }
+        ],
+        "primaryKey": "ProductCategoryKey"
+      }
+    },
+    {
+      "name": "product-lookup",
+      "path": "AdventureWorks Product Lookup.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "ProductKey", "type": "integer" },
+          { "name": "ProductSubcategoryKey", "type": "integer" },
+          { "name": "ProductSKU", "type": "string" },
+          { "name": "ProductName", "type": "string" },
+          { "name": "ModelName", "type": "string" },
+          { "name": "ProductDescription", "type": "string" },
+          { "name": "ProductColor", "type": "string" },
+          { "name": "ProductSize", "type": "string" },
+          { "name": "ProductStyle", "type": "string" },
+          { "name": "ProductCost", "type": "number" },
+          { "name": "ProductPrice", "type": "number" }
+        ],
+        "primaryKey": "ProductKey",
+        "foreignKeys": [
+          {
+            "fields": "ProductSubcategoryKey",
+            "reference": {
+              "resource": "product-subcategory-lookup",
+              "fields": "ProductSubcategoryKey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "product-subcategory-lookup",
+      "path": "AdventureWorks Product Subcategories Lookup.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "ProductSubcategoryKey", "type": "integer" },
+          { "name": "SubcategoryName", "type": "string" },
+          { "name": "ProductCategoryKey", "type": "integer" }
+        ],
+        "primaryKey": "ProductSubcategoryKey",
+        "foreignKeys": [
+          {
+            "fields": "ProductCategoryKey",
+            "reference": {
+              "resource": "product-category-lookup",
+              "fields": "ProductCategoryKey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "returns",
+      "path": "AdventureWorks Returns Data.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "ReturnDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "TerritoryKey", "type": "integer" },
+          { "name": "ProductKey", "type": "integer" },
+          { "name": "ReturnQuantity", "type": "integer" }
+        ],
+        "foreignKeys": [
+          {
+            "fields": "ProductKey",
+            "reference": { "resource": "product-lookup", "fields": "ProductKey" }
+          },
+          {
+            "fields": "TerritoryKey",
+            "reference": { "resource": "territory-lookup", "fields": "SalesTerritoryKey" }
+          },
+          {
+            "fields": "ReturnDate",
+            "reference": { "resource": "calendar-lookup", "fields": "Date" }
+          }
+        ]
+      }
+    },
+    {
+      "name": "sales-2020",
+      "path": "AdventureWorks Sales Data 2020.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "OrderDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "StockDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "OrderNumber", "type": "string" },
+          { "name": "ProductKey", "type": "integer" },
+          { "name": "CustomerKey", "type": "integer" },
+          { "name": "TerritoryKey", "type": "integer" },
+          { "name": "OrderLineItem", "type": "integer" },
+          { "name": "OrderQuantity", "type": "integer" }
+        ],
+        "foreignKeys": [
+          {
+            "fields": "CustomerKey",
+            "reference": { "resource": "customer-lookup", "fields": "CustomerKey" }
+          },
+          {
+            "fields": "ProductKey",
+            "reference": { "resource": "product-lookup", "fields": "ProductKey" }
+          },
+          {
+            "fields": "TerritoryKey",
+            "reference": { "resource": "territory-lookup", "fields": "SalesTerritoryKey" }
+          },
+          {
+            "fields": "OrderDate",
+            "reference": { "resource": "calendar-lookup", "fields": "Date" }
+          }
+        ]
+      }
+    },
+    {
+      "name": "sales-2021",
+      "path": "AdventureWorks Sales Data 2021.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "OrderDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "StockDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "OrderNumber", "type": "string" },
+          { "name": "ProductKey", "type": "integer" },
+          { "name": "CustomerKey", "type": "integer" },
+          { "name": "TerritoryKey", "type": "integer" },
+          { "name": "OrderLineItem", "type": "integer" },
+          { "name": "OrderQuantity", "type": "integer" }
+        ],
+        "foreignKeys": [
+          {
+            "fields": "CustomerKey",
+            "reference": { "resource": "customer-lookup", "fields": "CustomerKey" }
+          },
+          {
+            "fields": "ProductKey",
+            "reference": { "resource": "product-lookup", "fields": "ProductKey" }
+          },
+          {
+            "fields": "TerritoryKey",
+            "reference": { "resource": "territory-lookup", "fields": "SalesTerritoryKey" }
+          },
+          {
+            "fields": "OrderDate",
+            "reference": { "resource": "calendar-lookup", "fields": "Date" }
+          }
+        ]
+      }
+    },
+    {
+      "name": "sales-2022",
+      "path": "AdventureWorks Sales Data 2022.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "OrderDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "StockDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "OrderNumber", "type": "string" },
+          { "name": "ProductKey", "type": "integer" },
+          { "name": "CustomerKey", "type": "integer" },
+          { "name": "TerritoryKey", "type": "integer" },
+          { "name": "OrderLineItem", "type": "integer" },
+          { "name": "OrderQuantity", "type": "integer" }
+        ],
+        "foreignKeys": [
+          {
+            "fields": "CustomerKey",
+            "reference": { "resource": "customer-lookup", "fields": "CustomerKey" }
+          },
+          {
+            "fields": "ProductKey",
+            "reference": { "resource": "product-lookup", "fields": "ProductKey" }
+          },
+          {
+            "fields": "TerritoryKey",
+            "reference": { "resource": "territory-lookup", "fields": "SalesTerritoryKey" }
+          },
+          {
+            "fields": "OrderDate",
+            "reference": { "resource": "calendar-lookup", "fields": "Date" }
+          }
+        ]
+      }
+    },
+    {
+      "name": "territory-lookup",
+      "path": "AdventureWorks Territory Lookup.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "SalesTerritoryKey", "type": "integer" },
+          { "name": "Region", "type": "string" },
+          { "name": "Country", "type": "string" },
+          { "name": "Continent", "type": "string" }
+        ],
+        "primaryKey": "SalesTerritoryKey"
+      }
+    },
+    {
+      "name": "product-category-sales-unpivot-demo",
+      "path": "Product Category Sales (Unpivot Demo).csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "Date", "type": "date", "format": "%m/%d/%Y" },
+          { "name": "Product Category", "type": "string" },
+          { "name": "North Region", "type": "integer" },
+          { "name": "Central Region", "type": "integer" },
+          { "name": "South Region", "type": "integer" }
+        ]
+      }
+    },
+    {
+      "name": "sales-2020-copy",
+      "path": "Sales Data/AdventureWorks Sales Data 2020.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "OrderDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "StockDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "OrderNumber", "type": "string" },
+          { "name": "ProductKey", "type": "integer" },
+          { "name": "CustomerKey", "type": "integer" },
+          { "name": "TerritoryKey", "type": "integer" },
+          { "name": "OrderLineItem", "type": "integer" },
+          { "name": "OrderQuantity", "type": "integer" }
+        ],
+        "foreignKeys": [
+          {
+            "fields": "CustomerKey",
+            "reference": { "resource": "customer-lookup", "fields": "CustomerKey" }
+          },
+          {
+            "fields": "ProductKey",
+            "reference": { "resource": "product-lookup", "fields": "ProductKey" }
+          },
+          {
+            "fields": "TerritoryKey",
+            "reference": { "resource": "territory-lookup", "fields": "SalesTerritoryKey" }
+          },
+          {
+            "fields": "OrderDate",
+            "reference": { "resource": "calendar-lookup", "fields": "Date" }
+          }
+        ]
+      }
+    },
+    {
+      "name": "sales-2021-copy",
+      "path": "Sales Data/AdventureWorks Sales Data 2021.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "OrderDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "StockDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "OrderNumber", "type": "string" },
+          { "name": "ProductKey", "type": "integer" },
+          { "name": "CustomerKey", "type": "integer" },
+          { "name": "TerritoryKey", "type": "integer" },
+          { "name": "OrderLineItem", "type": "integer" },
+          { "name": "OrderQuantity", "type": "integer" }
+        ],
+        "foreignKeys": [
+          {
+            "fields": "CustomerKey",
+            "reference": { "resource": "customer-lookup", "fields": "CustomerKey" }
+          },
+          {
+            "fields": "ProductKey",
+            "reference": { "resource": "product-lookup", "fields": "ProductKey" }
+          },
+          {
+            "fields": "TerritoryKey",
+            "reference": { "resource": "territory-lookup", "fields": "SalesTerritoryKey" }
+          },
+          {
+            "fields": "OrderDate",
+            "reference": { "resource": "calendar-lookup", "fields": "Date" }
+          }
+        ]
+      }
+    },
+    {
+      "name": "sales-2022-copy",
+      "path": "Sales Data/AdventureWorks Sales Data 2022.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "schema": {
+        "fields": [
+          { "name": "OrderDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "StockDate", "type": "date", "format": "%Y-%m-%d" },
+          { "name": "OrderNumber", "type": "string" },
+          { "name": "ProductKey", "type": "integer" },
+          { "name": "CustomerKey", "type": "integer" },
+          { "name": "TerritoryKey", "type": "integer" },
+          { "name": "OrderLineItem", "type": "integer" },
+          { "name": "OrderQuantity", "type": "integer" }
+        ],
+        "foreignKeys": [
+          {
+            "fields": "CustomerKey",
+            "reference": { "resource": "customer-lookup", "fields": "CustomerKey" }
+          },
+          {
+            "fields": "ProductKey",
+            "reference": { "resource": "product-lookup", "fields": "ProductKey" }
+          },
+          {
+            "fields": "TerritoryKey",
+            "reference": { "resource": "territory-lookup", "fields": "SalesTerritoryKey" }
+          },
+          {
+            "fields": "OrderDate",
+            "reference": { "resource": "calendar-lookup", "fields": "Date" }
+          }
+        ]
+      }
+    }
+  ]
+}

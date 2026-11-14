@@ -1,0 +1,59 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-IN
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup baseProductGroup
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup YearlySales
+
+	annotation PBI_QueryGroupOrder = 1
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["folderAddress","Customers","Category","Products","subcategory","Territory","Sales 2020","Sales 2021","Sales 2022","Products lookup","Sales","zero","Returns Data"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Customers
+ref table DateTableTemplate_83b0e35d-4f90-49d1-be96-ef505bd621c9
+ref table LocalDateTable_d2e9fddf-31b6-48fb-9baf-731790f0f5a5
+ref table Category
+ref table Products
+ref table subcategory
+ref table Territory
+ref table 'Sales 2020'
+ref table LocalDateTable_23ed5bc3-3ba1-466b-a7f4-8fa2cd4ec302
+ref table LocalDateTable_98807b28-0a2b-4b63-b09b-6b47924bad11
+ref table 'Sales 2021'
+ref table LocalDateTable_984d4b86-e7c6-4856-83c4-9f1ebbb0e9e6
+ref table LocalDateTable_a47731fc-d312-4224-a756-660f28029a08
+ref table 'Sales 2022'
+ref table LocalDateTable_1e78d6a4-a87e-4f78-be02-1b8df40d4080
+ref table LocalDateTable_38d6ea51-30b8-414c-8dbb-c37a3d3bc8d7
+ref table 'Products lookup'
+ref table Sales
+ref table LocalDateTable_c96cbb3e-9258-4e77-9087-3d87c85e2e48
+ref table _
+ref table LocalDateTable_bd46df98-7cd3-4a7d-8e94-0220b8ff6b15
+ref table LocalDateTable_a3ea237f-0c68-4eb0-ac4d-38d2dc980e32
+ref table LocalDateTable_a585a856-4ab3-4012-9b0c-db3040cd099d
+ref table LocalDateTable_97498dac-d441-4175-8e9b-1791f874ad53
+ref table LocalDateTable_0fd499fc-4e33-4553-9fdb-bd681196b51c
+ref table Calander
+ref table LocalDateTable_26728466-2ec3-4fe7-a792-653609924bbf
+ref table LocalDateTable_bed76ec5-b25b-4078-ac7c-990de416831b
+ref table LocalDateTable_e1293a51-0a2b-4b31-ba7e-b72a1ce3e89f
+ref table LocalDateTable_3fa43fd7-8015-4ad2-b0e8-c3d750d2f5e7
+ref table LocalDateTable_df186f75-7f56-45c5-b680-0e4ea03af4a1
+ref table zero
+ref table 'Returns Data'
+
+ref cultureInfo en-US
+

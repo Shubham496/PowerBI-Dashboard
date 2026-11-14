@@ -1,0 +1,150 @@
+table Products
+	isHidden
+	lineageTag: 5091f077-50a7-4aa7-bc8e-79ec48ea1798
+
+	column ProductKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 93977437-b6cc-4ff1-bc9e-0a2e83439ef8
+		summarizeBy: count
+		sourceColumn: ProductKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductSubcategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7aa58df0-6a37-439c-a20c-15ad5f7c199e
+		summarizeBy: count
+		sourceColumn: ProductSubcategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductSKU
+		dataType: string
+		isHidden
+		lineageTag: c259a457-8d3f-436f-8283-0c97e6661fdd
+		summarizeBy: none
+		sourceColumn: ProductSKU
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductName
+		dataType: string
+		isHidden
+		lineageTag: ffa2fd1d-c956-4085-bbd5-a4788f890438
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModelName
+		dataType: string
+		isHidden
+		lineageTag: 89b93861-60f7-4f81-bd0a-58ea2118ddc8
+		summarizeBy: none
+		sourceColumn: ModelName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductDescription
+		dataType: string
+		isHidden
+		lineageTag: 7172202e-7b8a-4f43-b47d-8979657810af
+		summarizeBy: none
+		sourceColumn: ProductDescription
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductColor
+		dataType: string
+		isHidden
+		lineageTag: a34d8754-3282-4409-ad2a-15cd195c2e5d
+		summarizeBy: none
+		sourceColumn: ProductColor
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductSize
+		dataType: string
+		isHidden
+		lineageTag: c9189b1c-3f2f-4544-a889-d90d44ca2b2c
+		summarizeBy: none
+		sourceColumn: ProductSize
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductStyle
+		dataType: string
+		isHidden
+		lineageTag: 2e7dd6eb-0e2d-4b54-8edc-0617fd767a58
+		summarizeBy: none
+		sourceColumn: ProductStyle
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCost
+		dataType: double
+		isHidden
+		lineageTag: 5541aaf7-3022-407a-8e24-acd5bf75eecb
+		summarizeBy: sum
+		sourceColumn: ProductCost
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ProductPrice
+		dataType: double
+		isHidden
+		lineageTag: 833e3fe4-f3b7-4dab-ab57-87f33bd4bcea
+		summarizeBy: sum
+		sourceColumn: ProductPrice
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Products = m
+		mode: import
+		queryGroup: baseProductGroup
+		source =
+				let
+				    Source = Folder.Files(folderAddress),
+				    #"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Product Lookup csv" = Source{[#"Folder Path"=folderAddress,Name="AdventureWorks Product Lookup.csv"]}[Content],
+				    #"Imported CSV" = Csv.Document(#"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Product Lookup csv",[Delimiter=",", Columns=11, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ProductKey", Int64.Type}, {"ProductSubcategoryKey", Int64.Type}, {"ProductSKU", type text}, {"ProductName", type text}, {"ModelName", type text}, {"ProductDescription", type text}, {"ProductColor", type text}, {"ProductSize", type text}, {"ProductStyle", type text}, {"ProductCost", type number}, {"ProductPrice", type number}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

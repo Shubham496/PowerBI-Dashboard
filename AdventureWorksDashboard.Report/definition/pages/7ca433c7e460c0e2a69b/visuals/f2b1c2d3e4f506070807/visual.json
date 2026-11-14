@@ -1,0 +1,123 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "f2b1c2d3e4f506070807",
+  "position": {
+    "x": 960,
+    "y": 734.60869565217388,
+    "z": 6,
+    "height": 315.13043478260869,
+    "width": 582.26086956521738,
+    "tabOrder": 6
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Returns Data"
+                    }
+                  },
+                  "Property": "ReturnDate"
+                }
+              },
+              "queryRef": "Returns Data.ReturnDate",
+              "nativeQueryRef": "ReturnDate"
+            },
+            {
+              "field": {
+                "HierarchyLevel": {
+                  "Expression": {
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Products lookup"
+                        }
+                      },
+                      "Hierarchy": "CategoryName Hierarchy"
+                    }
+                  },
+                  "Level": "ProductName"
+                }
+              },
+              "queryRef": "Products lookup.CategoryName Hierarchy.ProductName",
+              "nativeQueryRef": "CategoryName Hierarchy ProductName"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Returns Data"
+                    }
+                  },
+                  "Property": "ReturnQuantity"
+                }
+              },
+              "queryRef": "Returns Data.ReturnQuantity",
+              "nativeQueryRef": "ReturnQuantity"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Returns Data"
+                  }
+                },
+                "Property": "ReturnDate"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Customer Return Audit History (Returned Items)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

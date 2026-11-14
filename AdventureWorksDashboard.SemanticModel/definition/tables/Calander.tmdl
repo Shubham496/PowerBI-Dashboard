@@ -1,0 +1,202 @@
+table Calander
+	lineageTag: 2b5c11a8-7890-4961-b07e-42b7b8c29ab5
+
+	column Date
+		formatString: Long Date
+		lineageTag: fdd4ff45-ec10-4244-b793-8a54761c4c2b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Date]
+
+		variation Variation
+			isDefault
+			relationship: 2d3f1256-501b-4719-9cfd-13ad67350efc
+			defaultHierarchy: LocalDateTable_26728466-2ec3-4fe7-a792-653609924bbf.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		formatString: 0
+		lineageTag: d6194ab5-39ae-4aa7-8c2b-77180405e8d0
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: _[Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		lineageTag: 146c6abb-fbfa-4f44-b48c-e046d2f96312
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		formatString: 0
+		lineageTag: f9191eb4-966e-4ba4-ade9-70ecdfea3048
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: _[Month Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		lineageTag: 2550e67e-8244-4b97-83e4-86abcdd2be48
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Month Name]
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Short Month'
+		lineageTag: f56042e9-7f8b-4892-a85b-b6cdb8565aef
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Short Month]
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year-Month
+		lineageTag: ce37e779-6285-400e-9e06-7266444aac27
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Year-Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter-Year
+		lineageTag: 4dce5f07-4e04-4e43-9422-2d3975bd1b64
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Quarter-Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		formatString: 0
+		lineageTag: 5d6840ad-5309-4187-a722-f5334ceede8a
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: _[Day]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		lineageTag: a1a8de50-6c5d-46f0-80ad-99c65fd67248
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Day Name]
+		sortByColumn: 'Day of Week'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Short Day'
+		lineageTag: 9b42a2d1-97a2-4791-9b18-27ff1445a859
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Short Day]
+		sortByColumn: 'Day of Week'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week'
+		formatString: 0
+		lineageTag: b45b51fe-dc97-4386-ba22-970cad058035
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: _[Day of Week]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Number'
+		formatString: 0
+		lineageTag: b15acd43-f78f-46e1-b028-b8fb9f2ec0b7
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: _[Week Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Weekend'
+		lineageTag: b38a3c72-0f05-452c-84f9-ecd05c4924c6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Is Weekend]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Start'
+		formatString: Long Date
+		lineageTag: 807ba239-213e-45d5-9b24-de0471ec635f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Month Start]
+
+		variation Variation
+			isDefault
+			relationship: 087a3c8e-dd69-4f61-93fe-91fc89b14a32
+			defaultHierarchy: LocalDateTable_bed76ec5-b25b-4078-ac7c-990de416831b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Month End'
+		formatString: Long Date
+		lineageTag: f07f81a2-a11a-4ac4-9e5f-2d52ad74f4cd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Month End]
+
+		variation Variation
+			isDefault
+			relationship: 875f0877-11a1-493f-b3f9-f90273bb3ff2
+			defaultHierarchy: LocalDateTable_e1293a51-0a2b-4b31-ba7e-b72a1ce3e89f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Year Start'
+		formatString: Long Date
+		lineageTag: 357ba2b4-c6a1-4272-b774-84cea10c89d5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Year Start]
+
+		variation Variation
+			isDefault
+			relationship: d52388cf-dc73-414c-a27b-b5070c89d5de
+			defaultHierarchy: LocalDateTable_3fa43fd7-8015-4ad2-b0e8-c3d750d2f5e7.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Year End'
+		formatString: Long Date
+		lineageTag: e675d360-5c37-41c9-b66e-a98988616f60
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: _[Year End]
+
+		variation Variation
+			isDefault
+			relationship: 527c0c46-31de-4dfa-ada6-51c1ca209100
+			defaultHierarchy: LocalDateTable_df186f75-7f56-45c5-b680-0e4ea03af4a1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Calander = calculated
+		mode: import
+		source = _
+
+	annotation PBI_Id = 1f2ea79c68bb46d3bda0d6be5f5525cf
+

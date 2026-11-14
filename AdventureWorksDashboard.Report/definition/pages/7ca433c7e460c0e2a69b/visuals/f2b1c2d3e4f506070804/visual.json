@@ -1,0 +1,141 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "f2b1c2d3e4f506070804",
+  "position": {
+    "x": 30,
+    "y": 265,
+    "z": 3,
+    "height": 120,
+    "width": 1860,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Customer Lifetime Sales"
+                }
+              },
+              "queryRef": "zero.Customer Lifetime Sales",
+              "nativeQueryRef": "Customer Lifetime Sales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Customer Total Orders"
+                }
+              },
+              "queryRef": "zero.Customer Total Orders",
+              "nativeQueryRef": "Customer Total Orders"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Customer Total Units"
+                }
+              },
+              "queryRef": "zero.Customer Total Units",
+              "nativeQueryRef": "Customer Total Units"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Customer First Order Date"
+                }
+              },
+              "queryRef": "zero.Customer First Order Date",
+              "nativeQueryRef": "Customer First Order Date"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Customer Last Order Date"
+                }
+              },
+              "queryRef": "zero.Customer Last Order Date",
+              "nativeQueryRef": "Customer Last Order Date"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Customer Lifetime Return Rate"
+                }
+              },
+              "queryRef": "zero.Customer Lifetime Return Rate",
+              "nativeQueryRef": "Customer Lifetime Return Rate"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "zero"
+                  }
+                },
+                "Property": "Customer Lifetime Sales"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

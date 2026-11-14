@@ -1,0 +1,3008 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .canvas-wrapper {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .canvas {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: #f8fafc;
+      overflow: hidden;
+    }
+    /* Scale factor: we render at 960px width = 1920/2, so all coords are /2 */
+    .vis-box {
+      position: absolute;
+      border: 1.5px dashed #94a3b8;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.92);
+      padding: 6px 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .vis-box:hover {
+      border-color: #0F4C81;
+      background: rgba(15,76,129,0.06);
+      z-index: 10;
+    }
+    .vis-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0F4C81;
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+    .vis-type {
+      font-size: 9px;
+      font-weight: 600;
+      color: #f59e0b;
+      margin-bottom: 3px;
+    }
+    .vis-detail {
+      font-size: 8px;
+      color: #475569;
+      line-height: 1.35;
+    }
+    .vis-detail b {
+      color: #0f172a;
+    }
+    .kpi-box {
+      position: absolute;
+      border: 1.5px solid #0F4C81;
+      border-radius: 6px;
+      background: rgba(15,76,129,0.07);
+      padding: 4px 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .kpi-title {
+      font-size: 9px;
+      font-weight: 700;
+      color: #0F4C81;
+      line-height: 1.2;
+    }
+    .kpi-sub {
+      font-size: 7.5px;
+      color: #64748b;
+      line-height: 1.3;
+    }
+    .shell-box {
+      position: absolute;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 4px;
+      background: rgba(226,232,240,0.35);
+      padding: 3px 6px;
+      display: flex;
+      align-items: center;
+    }
+    .shell-label {
+      font-size: 8px;
+      font-weight: 600;
+      color: #64748b;
+    }
+    .nav-active {
+      color: #0F4C81 !important;
+      border-bottom: 2px solid #0F4C81;
+      padding-bottom: 1px;
+    }
+    .page-tab {
+      cursor: pointer;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 6px 6px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      background: var(--card);
+      color: var(--muted-foreground);
+      transition: all 0.15s;
+    }
+    .page-tab.active {
+      background: #0F4C81;
+      color: #fff;
+      border-color: #0F4C81;
+    }
+    .page-tab:hover:not(.active) {
+      background: rgba(15,76,129,0.08);
+    }
+    .dim-label {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      font-size: 7px;
+      color: #94a3b8;
+      font-style: italic;
+    }
+    .coord-label {
+      position: absolute;
+      top: 1px;
+      right: 4px;
+      font-size: 6.5px;
+      color: #475569;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4">
+  <div class="max-w-[1000px] mx-auto">
+    <h1 class="text-xl font-bold mb-1" style="color:#0F4C81">Power BI Dashboard — Visual Wireframe Blueprint</h1>
+    <p class="text-xs mb-3" style="color:var(--muted-foreground)">Canvas: 1920 × 1080 px (16:9). All coordinates shown at half-scale. Hover a box for highlight. Click tabs to switch pages. Full DAX formulas, visual bindings, and modeling improvements are provided below each page.</p>
+
+    <!-- PAGE TABS -->
+    <div class="flex flex-wrap gap-1 mb-0" id="tabBar">
+      <div class="page-tab active" onclick="showPage(0)">01 Overview</div>
+      <div class="page-tab" onclick="showPage(1)">02 Sales & Profit</div>
+      <div class="page-tab" onclick="showPage(2)">03 Customers</div>
+      <div class="page-tab" onclick="showPage(3)">04 Products</div>
+      <div class="page-tab" onclick="showPage(4)">05 Geography</div>
+      <div class="page-tab" onclick="showPage(5)">06 Returns</div>
+      <div class="page-tab" onclick="showPage(6)">Tooltip</div>
+      <div class="page-tab" onclick="showPage(7)">Drillthrough</div>
+    </div>
+
+    <!-- ALL PAGES -->
+    <div id="pages">
+
+      <!-- ========== PAGE 01: EXECUTIVE OVERVIEW ========== -->
+      <div class="canvas-wrapper page-content" data-page="0">
+        <div class="text-xs font-semibold mt-2 mb-1" style="color:#0F4C81">Page 01 — Executive Overview <span style="color:#94a3b8">| "How is the business performing?"</span></div>
+        <div class="canvas">
+          <!-- TOP SHELL: Title -->
+          <div class="shell-box" style="left:1.5%;top:1.8%;width:20%;height:5.5%">
+            <span class="shell-label">📊 AdventureWorks Dashboard</span>
+          </div>
+          <!-- TOP SHELL: Nav -->
+          <div class="shell-box" style="left:23%;top:1.8%;width:46%;height:5.5%">
+            <span class="shell-label"><span class="nav-active">OVERVIEW</span>&nbsp;&nbsp;|&nbsp;&nbsp;SALES&nbsp;&nbsp;|&nbsp;&nbsp;CUSTOMERS&nbsp;&nbsp;|&nbsp;&nbsp;PRODUCTS&nbsp;&nbsp;|&nbsp;&nbsp;GEO&nbsp;&nbsp;|&nbsp;&nbsp;RETURNS</span>
+          </div>
+          <!-- TOP SHELL: Year Slicer -->
+          <div class="shell-box" style="left:70%;top:1.8%;width:14%;height:5.5%">
+            <span class="shell-label">🔘 Year Slicer: [Year Selector]</span>
+          </div>
+          <!-- TOP SHELL: Filter btn -->
+          <div class="shell-box" style="left:85%;top:1.8%;width:13%;height:5.5%">
+            <span class="shell-label">☰ Filter Panel</span>
+          </div>
+
+          <!-- KPI ROW -->
+          <div class="kpi-box" style="left:1.5%;top:9%;width:18.3%;height:13%">
+            <div class="kpi-title">💰 CY Sales</div>
+            <div class="kpi-sub">Measure: [Formatted Sales]<br>Sub: [Formatted Sales Growth] ▲▼<br>Ref: PY Sales</div>
+            <div class="coord-label">X:30 Y:95 W:356 H:155</div>
+          </div>
+          <div class="kpi-box" style="left:20.8%;top:9%;width:18.3%;height:13%">
+            <div class="kpi-title">📈 Gross Profit</div>
+            <div class="kpi-sub">Measure: [CY Gross Profit]<br>Sub: [Gross Profit Growth] ▲▼</div>
+            <div class="coord-label">X:412 Y:95 W:356 H:155</div>
+          </div>
+          <div class="kpi-box" style="left:40.1%;top:9%;width:18.3%;height:13%">
+            <div class="kpi-title">📊 Gross Margin</div>
+            <div class="kpi-sub">Measure: [CY Gross Margin]<br>Sub: [Delta Gross Margin]</div>
+            <div class="coord-label">X:794 Y:95 W:356 H:155</div>
+          </div>
+          <div class="kpi-box" style="left:59.4%;top:9%;width:18.3%;height:13%">
+            <div class="kpi-title">👥 Customers</div>
+            <div class="kpi-sub">Measure: [CY Customers]<br>Sub: [Formatted Customer Growth]</div>
+            <div class="coord-label">X:1176 Y:95 W:356 H:155</div>
+          </div>
+          <div class="kpi-box" style="left:78.7%;top:9%;width:19.5%;height:13%">
+            <div class="kpi-title">📦 Quantity & Returns</div>
+            <div class="kpi-sub">Measure: [CY Quantity]<br>Sub: Return Rate: [Return Rate]</div>
+            <div class="coord-label">X:1558 Y:95 W:332 H:155</div>
+          </div>
+
+          <!-- VISUAL 1: CY vs PY Sales Trend -->
+          <div class="vis-box" style="left:1.5%;top:25%;width:56%;height:38%">
+            <div class="vis-title">CY vs PY Sales — Monthly Trend</div>
+            <div class="vis-type">📊 Line & Clustered Column Chart</div>
+            <div class="vis-detail">
+              <b>X-Axis:</b> Calendar[Month] (sort by MonthNumber)<br>
+              <b>Columns:</b> [CY Sales] — color #0F4C81<br>
+              <b>Line:</b> [PY Sales] — dashed, color #94A3B8<br>
+              <b>Tooltip:</b> [Sales Growth], [CY Orders]
+            </div>
+            <div class="coord-label">X:30 Y:270 W:1100 H:410</div>
+          </div>
+
+          <!-- VISUAL 2: Sales by Category -->
+          <div class="vis-box" style="left:59%;top:25%;width:39.5%;height:38%">
+            <div class="vis-title">Sales & Margin by Product Category</div>
+            <div class="vis-type">📊 Clustered Bar Chart</div>
+            <div class="vis-detail">
+              <b>Y-Axis:</b> ProductCategories[CategoryName]<br>
+              <b>X-Axis:</b> [CY Sales]<br>
+              <b>Data Labels:</b> Revenue + [CY Gross Margin]<br>
+              <b>Color:</b> #0F4C81
+            </div>
+            <div class="coord-label">X:1150 Y:270 W:740 H:410</div>
+          </div>
+
+          <!-- VISUAL 3: Sales by Country -->
+          <div class="vis-box" style="left:1.5%;top:65%;width:46%;height:32%">
+            <div class="vis-title">Sales by Country (Top 6)</div>
+            <div class="vis-type">📊 Horizontal Bar Chart</div>
+            <div class="vis-detail">
+              <b>Y-Axis:</b> Territory[Country] (sorted desc by CY Sales)<br>
+              <b>X-Axis:</b> [CY Sales]<br>
+              <b>Tooltips:</b> [CY Customers], [Sales Growth], [Return Rate]
+            </div>
+            <div class="coord-label">X:30 Y:700 W:900 H:340</div>
+          </div>
+
+          <!-- VISUAL 4: Customer Quality Scorecard -->
+          <div class="vis-box" style="left:49%;top:65%;width:49.5%;height:32%">
+            <div class="vis-title">Customer Health & Quality Scorecard</div>
+            <div class="vis-type">📋 Matrix / Table</div>
+            <div class="vis-detail">
+              <b>Rows:</b> ProductCategories[CategoryName]<br>
+              <b>Values:</b> [CY Orders], [CY Repeat Customers],<br>
+              [CY Repeat Rate], [CY Return Qty], [Return Rate]<br>
+              <b>Cond. Format:</b> Red if Return Rate > 2.5%
+            </div>
+            <div class="coord-label">X:950 Y:700 W:940 H:340</div>
+          </div>
+        </div>
+      
+
+      <!-- DAX SPECIFICATIONS & CALCULATIONS SECTION FOR PAGE 01 -->
+      <div class="mt-4 border rounded-xl bg-slate-50 p-4 shadow-sm border-slate-300">
+        <div class="flex items-center justify-between border-b pb-3 mb-4 border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold bg-[#0F4C81] text-white">Page 01 DAX Blueprint</span>
+              <h2 class="text-base font-bold text-slate-900">Executive Overview</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Answering: "How is the business performing across revenue, profit, customers, and product returns?"</p>
+          </div>
+          <span class="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-full shadow-xs">
+            🎯 Executive KPI Tracking & Performance Diagnostics
+          </span>
+        </div>
+
+        <!-- SECTION 1: CORE DAX MEASURES -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📐 Required DAX Measures & Formulas</span>
+            <span class="text-[10px] lowercase text-slate-400 font-normal">(12 measures defined)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Sales]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Revenue</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Sales = 
+CALCULATE(
+    SUMX(Sales, Sales[OrderQuantity] * Sales[ProductPrice]),
+    &#x27;Calander&#x27;[Date]
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Calculates the total revenue for the current context/year by multiplying order quantity by the unit selling price.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Sales = 
+CALCULATE(
+    SUMX(Sales, Sales[OrderQuantity] * Sales[ProductPrice]),
+    &#x27;Calander&#x27;[Date]
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Σ (OrderQuantity × ProductPrice)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[PY Sales]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800">Time Intelligence</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="PY Sales = 
+CALCULATE(
+    [CY Sales],
+    SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Shifts the calendar date filter back exactly one year to evaluate prior year revenue across identical dates.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>PY Sales = 
+CALCULATE(
+    [CY Sales],
+    SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Sales evaluated over [Date - 1 Year]</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Sales Delta]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800">Variance</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Sales Delta = [CY Sales] - [PY Sales]" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Absolute net dollar variance between current year sales and prior year sales.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Sales Delta = [CY Sales] - [PY Sales]</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">CY Sales - PY Sales</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Sales Growth]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Growth %</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Sales Growth = 
+DIVIDE([Sales Delta], [PY Sales], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Percentage increase or decrease in sales compared to prior year, guarded against divide-by-zero errors.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Sales Growth = 
+DIVIDE([Sales Delta], [PY Sales], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">(CY Sales - PY Sales) / PY Sales</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (+0.0%;-0.0%;0.0%)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Sales Formatted]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-800">Card Display</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Sales Formatted = 
+VAR Amount = [CY Sales]
+RETURN
+SWITCH(
+    TRUE(),
+    ISBLANK(Amount), &quot;$0.00&quot;,
+    ABS(Amount) &gt;= 1000000, &quot;$&quot; &amp; FORMAT(Amount / 1000000, &quot;0.00&quot;) &amp; &quot;M&quot;,
+    ABS(Amount) &gt;= 1000, &quot;$&quot; &amp; FORMAT(Amount / 1000, &quot;0.0&quot;) &amp; &quot;K&quot;,
+    &quot;$&quot; &amp; FORMAT(Amount, &quot;#,##0.00&quot;)
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Formatted text card label with dynamic scaling (M for Millions, K for Thousands) for clean executive card display.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Sales Formatted = 
+VAR Amount = [CY Sales]
+RETURN
+SWITCH(
+    TRUE(),
+    ISBLANK(Amount), &quot;$0.00&quot;,
+    ABS(Amount) &gt;= 1000000, &quot;$&quot; &amp; FORMAT(Amount / 1000000, &quot;0.00&quot;) &amp; &quot;M&quot;,
+    ABS(Amount) &gt;= 1000, &quot;$&quot; &amp; FORMAT(Amount / 1000, &quot;0.0&quot;) &amp; &quot;K&quot;,
+    &quot;$&quot; &amp; FORMAT(Amount, &quot;#,##0.00&quot;)
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Dynamic scalar formatting</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">String text</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Sales Growth Formatted]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Indicator</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Sales Growth Formatted = 
+VAR GrowthVal = [Sales Growth]
+VAR DeltaVal = [Sales Delta]
+RETURN
+SWITCH(
+    TRUE(),
+    ISBLANK([PY Sales]), &quot;New&quot;,
+    DeltaVal &gt; 0, &quot;▲ +&quot; &amp; FORMAT(GrowthVal, &quot;0.0%&quot;),
+    DeltaVal &lt; 0, &quot;▼ &quot; &amp; FORMAT(GrowthVal, &quot;0.0%&quot;),
+    &quot;— 0.0%&quot;
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Produces an executive callout badge with Unicode indicator arrows (▲/▼) and formatted percentage.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Sales Growth Formatted = 
+VAR GrowthVal = [Sales Growth]
+VAR DeltaVal = [Sales Delta]
+RETURN
+SWITCH(
+    TRUE(),
+    ISBLANK([PY Sales]), &quot;New&quot;,
+    DeltaVal &gt; 0, &quot;▲ +&quot; &amp; FORMAT(GrowthVal, &quot;0.0%&quot;),
+    DeltaVal &lt; 0, &quot;▼ &quot; &amp; FORMAT(GrowthVal, &quot;0.0%&quot;),
+    &quot;— 0.0%&quot;
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Unicode directional formatted string</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">String text</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Gross Profit]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Profitability</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Total Cost = 
+CALCULATE(
+    SUMX(Sales, Sales[OrderQuantity] * RELATED(&#x27;Products lookup&#x27;[ProductCost])),
+    &#x27;Calander&#x27;[Date]
+)
+
+CY Gross Profit = [CY Sales] - [CY Total Cost]" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Calculates gross margin dollars by subtracting total product manufacturing/procurement cost from total sales.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Total Cost = 
+CALCULATE(
+    SUMX(Sales, Sales[OrderQuantity] * RELATED(&#x27;Products lookup&#x27;[ProductCost])),
+    &#x27;Calander&#x27;[Date]
+)
+
+CY Gross Profit = [CY Sales] - [CY Total Cost]</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Revenue - COGS (Cost of Goods Sold)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Gross Margin]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Profitability %</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Gross Margin = 
+DIVIDE([CY Gross Profit], [CY Sales], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Gross margin percentage showing operational efficiency of generated sales.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Gross Margin = 
+DIVIDE([CY Gross Profit], [CY Sales], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Gross Profit / CY Sales</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (0.0%)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Customers]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Audience</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Customers = 
+CALCULATE(
+    DISTINCTCOUNT(Sales[CustomerKey]),
+    &#x27;Calander&#x27;[Date]
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Unique count of active purchasing customers within the filtered time period.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Customers = 
+CALCULATE(
+    DISTINCTCOUNT(Sales[CustomerKey]),
+    &#x27;Calander&#x27;[Date]
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">DistinctCount(CustomerKey)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Whole Number (#,##0)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Customer Growth]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800">Growth %</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="PY Customers = 
+CALCULATE([CY Customers], SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date]))
+
+Customer Growth = 
+DIVIDE([CY Customers] - [PY Customers], [PY Customers], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Year-over-year percentage change in active buying customer base.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>PY Customers = 
+CALCULATE([CY Customers], SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date]))
+
+Customer Growth = 
+DIVIDE([CY Customers] - [PY Customers], [PY Customers], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">(CY Customers - PY Customers) / PY Customers</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (+0.0%;-0.0%)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Return Rate]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-800">Quality</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Quantity = 
+CALCULATE(SUM(Sales[OrderQuantity]), &#x27;Calander&#x27;[Date])
+
+CY Return Quantity = 
+CALCULATE(
+    SUM(&#x27;Returns Data&#x27;[ReturnQuantity]),
+    USERELATIONSHIP(&#x27;Returns Data&#x27;[ReturnDate], &#x27;Calander&#x27;[Date])
+)
+
+Return Rate = 
+DIVIDE([CY Return Quantity], [CY Quantity], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Ratio of units returned compared to total units sold across the active filter context.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Quantity = 
+CALCULATE(SUM(Sales[OrderQuantity]), &#x27;Calander&#x27;[Date])
+
+CY Return Quantity = 
+CALCULATE(
+    SUM(&#x27;Returns Data&#x27;[ReturnQuantity]),
+    USERELATIONSHIP(&#x27;Returns Data&#x27;[ReturnDate], &#x27;Calander&#x27;[Date])
+)
+
+Return Rate = 
+DIVIDE([CY Return Quantity], [CY Quantity], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Returned Units / Units Sold</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (0.00%)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Repeat Rate]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-800">Retention</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Repeat Customers = 
+CALCULATE(
+    COUNTROWS(
+        FILTER(
+            VALUES(Sales[CustomerKey]),
+            CALCULATE(DISTINCTCOUNT(Sales[OrderNumber])) &gt; 1
+        )
+    ),
+    &#x27;Calander&#x27;[Date]
+)
+
+CY Repeat Rate = 
+DIVIDE([CY Repeat Customers], [CY Customers], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Percentage of buying customers who placed more than one distinct order in the active year/period.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Repeat Customers = 
+CALCULATE(
+    COUNTROWS(
+        FILTER(
+            VALUES(Sales[CustomerKey]),
+            CALCULATE(DISTINCTCOUNT(Sales[OrderNumber])) &gt; 1
+        )
+    ),
+    &#x27;Calander&#x27;[Date]
+)
+
+CY Repeat Rate = 
+DIVIDE([CY Repeat Customers], [CY Customers], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Repeat Customers (>1 Order) / Total Customers</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (0.0%)</code></span>
+      </div>
+    </div>
+    
+          </div>
+        </div>
+
+        <!-- SECTION 2: VISUAL-TO-DATA BINDING MATRIX -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📊 Visual-to-Data Field & Measure Bindings</span>
+          </h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-[10px] uppercase tracking-wider text-slate-600 font-bold border-b border-slate-200">
+                  <th class="p-2">Visual Name / Slot</th>
+                  <th class="p-2">Visual Type</th>
+                  <th class="p-2">Axis / Rows / Columns</th>
+                  <th class="p-2">DAX Measures Applied</th>
+                  <th class="p-2">Formatting & Filter Logic</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">KPI Row: CY Sales Card</td>
+          <td class="p-2 text-amber-700 font-medium">New Card / KPI Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">N/A (Card Slot 1)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[Sales Formatted], [Sales Growth Formatted], [PY Sales]</td>
+          <td class="p-2 text-[10px] text-slate-600">Reference label: PY Sales; Callout colored by sign of [Sales Delta]</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">KPI Row: Gross Profit & Margin Cards</td>
+          <td class="p-2 text-amber-700 font-medium">New Card Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">N/A (Card Slots 2 & 3)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[CY Gross Profit], [Gross Profit Growth], [CY Gross Margin], [Gross Margin Delta]</td>
+          <td class="p-2 text-[10px] text-slate-600">Data labels with dynamic currency & percentage formatting</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">KPI Row: Customer & Quality Cards</td>
+          <td class="p-2 text-amber-700 font-medium">New Card Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">N/A (Card Slots 4 & 5)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[CY Customers], [Customer Growth], [CY Quantity], [Return Rate]</td>
+          <td class="p-2 text-[10px] text-slate-600">Sub-label displays Return Rate with threshold alert</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 1: Monthly Sales Trend</td>
+          <td class="p-2 text-amber-700 font-medium">Line & Clustered Column Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">X-Axis: Calander[Short Month] (Sorted by Month Number)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Columns: [CY Sales] (#0F4C81), Line: [PY Sales] (#94A3B8 Dashed), Tooltips: [Sales Growth], [CY Orders]</td>
+          <td class="p-2 text-[10px] text-slate-600">Show secondary Y-axis off; data labels optional on column series</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 2: Sales & Margin by Category</td>
+          <td class="p-2 text-amber-700 font-medium">Clustered Bar Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Y-Axis: Products lookup[CategoryName], X-Axis: [CY Sales]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Bar: [CY Sales], Tooltips: [CY Gross Margin], [CY Gross Profit]</td>
+          <td class="p-2 text-[10px] text-slate-600">Data labels showing revenue formatted; sorted descending by CY Sales</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 3: Sales by Country (Top 6)</td>
+          <td class="p-2 text-amber-700 font-medium">Horizontal Bar Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Y-Axis: Territory[Country], X-Axis: [CY Sales]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Bar: [CY Sales], Tooltips: [CY Customers], [Sales Growth], [Return Rate]</td>
+          <td class="p-2 text-[10px] text-slate-600">Top N filter: Top 6 by [CY Sales]; sorted descending</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 4: Customer & Quality Scorecard</td>
+          <td class="p-2 text-amber-700 font-medium">Matrix Table</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Rows: Products lookup[CategoryName]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[CY Orders], [CY Repeat Customers], [CY Repeat Rate], [CY Return Quantity], [Return Rate]</td>
+          <td class="p-2 text-[10px] text-slate-600">Conditional Formatting: Background color of [Return Rate] flagged light red if > 2.5%</td>
+        </tr>
+        
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ARCHITECTURAL IMPROVEMENTS & DATA MODELING NOTES -->
+        <div class="rounded-lg bg-blue-50/80 border border-blue-200 p-3 text-[11px] text-blue-900">
+          <div class="font-bold text-xs flex items-center gap-1.5 text-blue-950 mb-1.5">
+            <span>💡 Recommended Improvements & Power BI Best Practices</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-slate-700">
+            <li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Date Table Sort Order:</b> Ensure 'Calander'[Short Month] is explicitly sorted by 'Calander'[Month Number] in the model to avoid alphabetical sorting (Apr, Aug, Dec...).</li><li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Returns Relationship Activation:</b> The model has an inactive link between 'Returns Data'[ReturnDate] and 'Calander'[Date]. In DAX, explicitly wrap return measures in USERELATIONSHIP('Returns Data'[ReturnDate], 'Calander'[Date]) or activate the relationship in Power BI model view.</li><li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Performance Optimization via Variables:</b> In [Sales Growth Formatted] and other composite measures, use VAR to evaluate base measures exactly once per row/cell rather than recalculating multiple times inside SWITCH statements.</li>
+          </ul>
+        </div>
+      </div>
+    
+      </div>
+
+      <!-- ========== PAGE 02: SALES & PROFITABILITY ========== -->
+      <div class="canvas-wrapper page-content" data-page="1" style="display:none">
+        <div class="text-xs font-semibold mt-2 mb-1" style="color:#0F4C81">Page 02 — Sales & Profitability <span style="color:#94a3b8">| "Where is growth & profit coming from?"</span></div>
+        <div class="canvas">
+          <!-- TOP SHELL -->
+          <div class="shell-box" style="left:1.5%;top:1.8%;width:20%;height:5.5%">
+            <span class="shell-label">📊 AdventureWorks Dashboard</span>
+          </div>
+          <div class="shell-box" style="left:23%;top:1.8%;width:46%;height:5.5%">
+            <span class="shell-label">OVERVIEW&nbsp;&nbsp;|&nbsp;&nbsp;<span class="nav-active">SALES</span>&nbsp;&nbsp;|&nbsp;&nbsp;CUSTOMERS&nbsp;&nbsp;|&nbsp;&nbsp;PRODUCTS&nbsp;&nbsp;|&nbsp;&nbsp;GEO&nbsp;&nbsp;|&nbsp;&nbsp;RETURNS</span>
+          </div>
+          <div class="shell-box" style="left:70%;top:1.8%;width:14%;height:5.5%">
+            <span class="shell-label">🔘 Year Slicer</span>
+          </div>
+          <div class="shell-box" style="left:85%;top:1.8%;width:13%;height:5.5%">
+            <span class="shell-label">☰ Filter Panel</span>
+          </div>
+
+          <!-- Bookmark switcher -->
+          <div class="shell-box" style="left:1.5%;top:9%;width:24%;height:4%">
+            <span class="shell-label">⏱ Period: <span class="nav-active">Monthly</span> | Quarterly | Weekly</span>
+          </div>
+
+          <!-- KPI strip -->
+          <div class="kpi-box" style="left:26%;top:9%;width:17.5%;height:12%">
+            <div class="kpi-title">💰 CY Sales</div>
+            <div class="kpi-sub">[Formatted Sales]<br>[Sales Growth] ▲▼</div>
+            <div class="coord-label">W:340 H:130</div>
+          </div>
+          <div class="kpi-box" style="left:44.5%;top:9%;width:17.5%;height:12%">
+            <div class="kpi-title">📈 CY Gross Profit</div>
+            <div class="kpi-sub">[CY Gross Profit]<br>[Gross Profit Growth]</div>
+          </div>
+          <div class="kpi-box" style="left:63%;top:9%;width:17.5%;height:12%">
+            <div class="kpi-title">📊 CY Gross Margin</div>
+            <div class="kpi-sub">[CY Gross Margin] %<br>[Delta Gross Margin]</div>
+          </div>
+          <div class="kpi-box" style="left:81.5%;top:9%;width:17%;height:12%">
+            <div class="kpi-title">👤 Sales / Customer</div>
+            <div class="kpi-sub">[CY Sales per Customer]<br>vs PY</div>
+          </div>
+
+          <!-- VIS 1: Profit breakdown stacked chart -->
+          <div class="vis-box" style="left:1.5%;top:23%;width:58%;height:40%">
+            <div class="vis-title">Revenue Composition & Margin Trend</div>
+            <div class="vis-type">📊 Stacked Column + Line Chart</div>
+            <div class="vis-detail">
+              <b>X-Axis:</b> Calendar[Month] (switchable via bookmark)<br>
+              <b>Stacked Columns:</b><br>
+              &nbsp;&nbsp;Bottom: [CY Gross Cost] — #CBD5E1<br>
+              &nbsp;&nbsp;Top: [CY Gross Profit] — #0F4C81<br>
+              &nbsp;&nbsp;(Sum = CY Sales)<br>
+              <b>Line (2nd Axis):</b> [CY Gross Margin] — #F59E0B Amber
+            </div>
+            <div class="coord-label">X:30 Y:245 W:1150 H:440</div>
+          </div>
+
+          <!-- VIS 2: Scatter -->
+          <div class="vis-box" style="left:61%;top:23%;width:37.5%;height:40%">
+            <div class="vis-title">Growth vs Margin (Subcategory)</div>
+            <div class="vis-type">🔵 Scatter Chart</div>
+            <div class="vis-detail">
+              <b>Details:</b> Subcategories[SubcategoryName]<br>
+              <b>X-Axis:</b> [Sales Growth] (center zero-line)<br>
+              <b>Y-Axis:</b> [CY Gross Margin]<br>
+              <b>Bubble Size:</b> [CY Sales]<br>
+              <b>Legend:</b> Categories[CategoryName]<br>
+              <i>Identifies winners vs margin drags</i>
+            </div>
+            <div class="coord-label">X:1200 Y:245 W:690 H:440</div>
+          </div>
+
+          <!-- VIS 3: Matrix -->
+          <div class="vis-box" style="left:1.5%;top:65%;width:97%;height:32%">
+            <div class="vis-title">Product Performance Matrix (Drillable: Category → Subcategory)</div>
+            <div class="vis-type">📋 Matrix — Expandable rows</div>
+            <div class="vis-detail">
+              <b>Row Hierarchy:</b> CategoryName → SubcategoryName<br>
+              <b>Values:</b> [CY Sales] | [PY Sales] | [Formatted Sales Growth] | [CY Quantity] | [Quantity Growth] | [CY Gross Profit] | [CY Gross Margin]<br>
+              <b>Cond. Formatting:</b> Data bars on CY Sales, Color scale on Gross Margin (green→red)
+            </div>
+            <div class="coord-label">X:30 Y:705 W:1860 H:345</div>
+          </div>
+        </div>
+      
+
+      <!-- DAX SPECIFICATIONS & CALCULATIONS SECTION FOR PAGE 02 -->
+      <div class="mt-4 border rounded-xl bg-slate-50 p-4 shadow-sm border-slate-300">
+        <div class="flex items-center justify-between border-b pb-3 mb-4 border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold bg-[#0F4C81] text-white">Page 02 DAX Blueprint</span>
+              <h2 class="text-base font-bold text-slate-900">Sales & Profitability</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Answering: "Where is growth and margin coming from across categories and subcategories?"</p>
+          </div>
+          <span class="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-full shadow-xs">
+            🎯 Revenue Composition, Margin Optimization & Growth Drivers
+          </span>
+        </div>
+
+        <!-- SECTION 1: CORE DAX MEASURES -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📐 Required DAX Measures & Formulas</span>
+            <span class="text-[10px] lowercase text-slate-400 font-normal">(6 measures defined)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Sales per Customer]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Customer Value</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Sales per Customer = 
+DIVIDE([CY Sales], [CY Customers], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Average sales generated per active customer within the selected timeframe.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Sales per Customer = 
+DIVIDE([CY Sales], [CY Customers], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Total Sales / Distinct Purchasing Customers</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[PY Sales per Customer]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800">Time Intelligence</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="PY Sales per Customer = 
+CALCULATE(
+    [CY Sales per Customer],
+    SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Prior year benchmark for sales per customer over the same dates.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>PY Sales per Customer = 
+CALCULATE(
+    [CY Sales per Customer],
+    SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Sales per Customer evaluated over prior year</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Sales per Customer Growth]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Growth %</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Sales per Customer Growth = 
+DIVIDE([CY Sales per Customer] - [PY Sales per Customer], [PY Sales per Customer], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Percentage growth in customer average spend year-over-year.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Sales per Customer Growth = 
+DIVIDE([CY Sales per Customer] - [PY Sales per Customer], [PY Sales per Customer], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Δ Sales per Customer / PY Sales per Customer</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (+0.0%;-0.0%)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Quantity Growth]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800">Volume Growth</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="PY Quantity = 
+CALCULATE([CY Quantity], SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date]))
+
+Quantity Delta = [CY Quantity] - [PY Quantity]
+
+Quantity Growth = 
+DIVIDE([Quantity Delta], [PY Quantity], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Calculates volume growth in units sold year-over-year to distinguish volume expansion from price inflation.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>PY Quantity = 
+CALCULATE([CY Quantity], SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date]))
+
+Quantity Delta = [CY Quantity] - [PY Quantity]
+
+Quantity Growth = 
+DIVIDE([Quantity Delta], [PY Quantity], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">(CY Units - PY Units) / PY Units</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (+0.0%;-0.0%)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Gross Cost]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-800">COGS</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Gross Cost = 
+CALCULATE(
+    SUMX(Sales, Sales[OrderQuantity] * RELATED(&#x27;Products lookup&#x27;[ProductCost])),
+    &#x27;Calander&#x27;[Date]
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Total procurement/manufacturing product cost for units sold in current year.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Gross Cost = 
+CALCULATE(
+    SUMX(Sales, Sales[OrderQuantity] * RELATED(&#x27;Products lookup&#x27;[ProductCost])),
+    &#x27;Calander&#x27;[Date]
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Σ (OrderQuantity × ProductCost)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Gross Margin Color Format]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">Color Measure</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Gross Margin Color = 
+VAR MarginVal = [CY Gross Margin]
+RETURN
+SWITCH(
+    TRUE(),
+    MarginVal &gt;= 0.45, &quot;#10B981&quot;, /* High Profitability Green */
+    MarginVal &gt;= 0.35, &quot;#3B82F6&quot;, /* Healthy Margin Blue */
+    MarginVal &gt;= 0.25, &quot;#F59E0B&quot;, /* Caution Amber */
+    &quot;#EF4444&quot;                    /* Low Margin Red */
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Dynamic HEX color code generator for conditional formatting rules on matrix tables and scatter bubbles.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Gross Margin Color = 
+VAR MarginVal = [CY Gross Margin]
+RETURN
+SWITCH(
+    TRUE(),
+    MarginVal &gt;= 0.45, &quot;#10B981&quot;, /* High Profitability Green */
+    MarginVal &gt;= 0.35, &quot;#3B82F6&quot;, /* Healthy Margin Blue */
+    MarginVal &gt;= 0.25, &quot;#F59E0B&quot;, /* Caution Amber */
+    &quot;#EF4444&quot;                    /* Low Margin Red */
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Hex string based on gross margin tiers</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Hex Color string (#RRGGBB)</code></span>
+      </div>
+    </div>
+    
+          </div>
+        </div>
+
+        <!-- SECTION 2: VISUAL-TO-DATA BINDING MATRIX -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📊 Visual-to-Data Field & Measure Bindings</span>
+          </h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-[10px] uppercase tracking-wider text-slate-600 font-bold border-b border-slate-200">
+                  <th class="p-2">Visual Name / Slot</th>
+                  <th class="p-2">Visual Type</th>
+                  <th class="p-2">Axis / Rows / Columns</th>
+                  <th class="p-2">DAX Measures Applied</th>
+                  <th class="p-2">Formatting & Filter Logic</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Period Slicer (Monthly / Quarterly / Weekly)</td>
+          <td class="p-2 text-amber-700 font-medium">Button / Bookmark / Field Parameter</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Period Selection Table</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Dynamic X-Axis aggregation via Field Parameter</td>
+          <td class="p-2 text-[10px] text-slate-600">Single select pill selector</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 1: Revenue Composition & Margin Trend</td>
+          <td class="p-2 text-amber-700 font-medium">Stacked Column + Line Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">X-Axis: Calander[Short Month], Secondary Y-Axis: Margin %</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Stacked Columns: [CY Gross Cost] (#CBD5E1) + [CY Gross Profit] (#0F4C81); Line: [CY Gross Margin] (#F59E0B)</td>
+          <td class="p-2 text-[10px] text-slate-600">Stacked total equals [CY Sales]; secondary line shows margin fluctuations</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 2: Growth vs Margin Scatter Chart</td>
+          <td class="p-2 text-amber-700 font-medium">Scatter Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Details: Products lookup[SubcategoryName], Legend: CategoryName</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">X-Axis: [Sales Growth], Y-Axis: [CY Gross Margin], Bubble Size: [CY Sales]</td>
+          <td class="p-2 text-[10px] text-slate-600">Add constant reference line at X=0% (Growth zero line) and Y=company avg margin</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 3: Product Performance Matrix</td>
+          <td class="p-2 text-amber-700 font-medium">Matrix (Stepped Hierarchy)</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Rows: Products lookup[CategoryName] → Products lookup[SubcategoryName]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[CY Sales], [PY Sales], [Sales Growth Formatted], [CY Quantity], [Quantity Growth], [CY Gross Profit], [CY Gross Margin]</td>
+          <td class="p-2 text-[10px] text-slate-600">Data bars on CY Sales; background color scale on CY Gross Margin (Green to Red)</td>
+        </tr>
+        
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ARCHITECTURAL IMPROVEMENTS & DATA MODELING NOTES -->
+        <div class="rounded-lg bg-blue-50/80 border border-blue-200 p-3 text-[11px] text-blue-900">
+          <div class="font-bold text-xs flex items-center gap-1.5 text-blue-950 mb-1.5">
+            <span>💡 Recommended Improvements & Power BI Best Practices</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-slate-700">
+            <li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Field Parameter for Time Aggregation:</b> Instead of static bookmarks, use native Power BI Field Parameters to switch the trend chart dynamically between Calander[Short Month], Calander[Quarter], and Calander[Week Number].</li><li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Star-Schema Cost Materialization:</b> In high-scale deployments, adding ProductCost directly into the Sales fact table or utilizing SUMMARIZECOLUMNS minimizes run-time RELATED joins across millions of records.</li>
+          </ul>
+        </div>
+      </div>
+    
+      </div>
+
+      <!-- ========== PAGE 03: CUSTOMER PERFORMANCE ========== -->
+      <div class="canvas-wrapper page-content" data-page="2" style="display:none">
+        <div class="text-xs font-semibold mt-2 mb-1" style="color:#0F4C81">Page 03 — Customer Performance <span style="color:#94a3b8">| "Acquisition → Retention → Value"</span></div>
+        <div class="canvas">
+          <!-- TOP SHELL -->
+          <div class="shell-box" style="left:1.5%;top:1.8%;width:20%;height:5.5%">
+            <span class="shell-label">📊 AdventureWorks Dashboard</span>
+          </div>
+          <div class="shell-box" style="left:23%;top:1.8%;width:46%;height:5.5%">
+            <span class="shell-label">OVERVIEW&nbsp;&nbsp;|&nbsp;&nbsp;SALES&nbsp;&nbsp;|&nbsp;&nbsp;<span class="nav-active">CUSTOMERS</span>&nbsp;&nbsp;|&nbsp;&nbsp;PRODUCTS&nbsp;&nbsp;|&nbsp;&nbsp;GEO&nbsp;&nbsp;|&nbsp;&nbsp;RETURNS</span>
+          </div>
+          <div class="shell-box" style="left:70%;top:1.8%;width:14%;height:5.5%">
+            <span class="shell-label">🔘 Year Slicer</span>
+          </div>
+          <div class="shell-box" style="left:85%;top:1.8%;width:13%;height:5.5%">
+            <span class="shell-label">☰ Filter Panel</span>
+          </div>
+
+          <!-- KPI ROW -->
+          <div class="kpi-box" style="left:1.5%;top:9%;width:18.3%;height:13%">
+            <div class="kpi-title">👥 CY Customers</div>
+            <div class="kpi-sub">[CY Customers]<br>[Customer Growth] ▲▼</div>
+            <div class="coord-label">W:356 H:140</div>
+          </div>
+          <div class="kpi-box" style="left:20.8%;top:9%;width:18.3%;height:13%">
+            <div class="kpi-title">🆕 New Customers</div>
+            <div class="kpi-sub">[CY New Customers]<br>Bought in CY, not in PY</div>
+          </div>
+          <div class="kpi-box" style="left:40.1%;top:9%;width:18.3%;height:13%">
+            <div class="kpi-title">❌ Lost Customers</div>
+            <div class="kpi-sub">[CY Lost Customers]<br>Bought in PY, not in CY</div>
+          </div>
+          <div class="kpi-box" style="left:59.4%;top:9%;width:18.3%;height:13%">
+            <div class="kpi-title">🔁 Repeat Rate</div>
+            <div class="kpi-sub">[CY Repeat Rate] %<br>[CY Repeat Customers]</div>
+          </div>
+          <div class="kpi-box" style="left:78.7%;top:9%;width:19.5%;height:13%">
+            <div class="kpi-title">💰 Sales / Customer</div>
+            <div class="kpi-sub">[CY Sales per Customer]<br>vs PY</div>
+          </div>
+
+          <!-- VIS 1: New vs Lost -->
+          <div class="vis-box" style="left:1.5%;top:24%;width:56%;height:38%">
+            <div class="vis-title">New vs Lost Customers — Monthly Trend</div>
+            <div class="vis-type">📊 Clustered Column Chart</div>
+            <div class="vis-detail">
+              <b>X-Axis:</b> Calendar[Month]<br>
+              <b>Columns:</b><br>
+              &nbsp;&nbsp;[CY New Customers] — #10B981 Green<br>
+              &nbsp;&nbsp;[CY Lost Customers] — #EF4444 Red<br>
+              <b>Story:</b> Net customer acquisition visible
+            </div>
+            <div class="coord-label">X:30 Y:255 W:1100 H:420</div>
+          </div>
+
+          <!-- VIS 2: Repeat vs one-time -->
+          <div class="vis-box" style="left:59%;top:24%;width:39.5%;height:38%">
+            <div class="vis-title">Repeat vs One-Time by Country</div>
+            <div class="vis-type">📊 100% Stacked Bar Chart</div>
+            <div class="vis-detail">
+              <b>Y-Axis:</b> Territory[Country]<br>
+              <b>Values:</b><br>
+              &nbsp;&nbsp;[CY Repeat Customers] — #0F4C81<br>
+              &nbsp;&nbsp;[One-Time] = CY Cust − Repeat — #CBD5E1<br>
+              <b>Purpose:</b> Retention strength by market
+            </div>
+            <div class="coord-label">X:1150 Y:255 W:740 H:420</div>
+          </div>
+
+          <!-- VIS 3: Customer Value by Occupation -->
+          <div class="vis-box" style="left:1.5%;top:64%;width:46%;height:33%">
+            <div class="vis-title">Customer Value by Occupation</div>
+            <div class="vis-type">📊 Horizontal Bar Chart</div>
+            <div class="vis-detail">
+              <b>Y-Axis:</b> Customer[Occupation]<br>
+              <b>X-Axis:</b> [CY Sales]<br>
+              <b>Tooltip:</b> [Sales/Customer], [Orders/Customer]<br>
+              <b>Data Labels:</b> CY Sales formatted
+            </div>
+            <div class="coord-label">X:30 Y:695 W:900 H:355</div>
+          </div>
+
+          <!-- VIS 4: Education & Demographics -->
+          <div class="vis-box" style="left:49%;top:64%;width:49.5%;height:33%">
+            <div class="vis-title">Income & Education Segmentation</div>
+            <div class="vis-type">📊 Clustered Bar / Matrix</div>
+            <div class="vis-detail">
+              <b>Axis/Rows:</b> Customer[EducationLevel]<br>
+              <b>Values:</b> [CY Customers], [CY Sales],<br>
+              [CY Orders per Customer]<br>
+              <b>Optional legend:</b> Customer[Gender]
+            </div>
+            <div class="coord-label">X:950 Y:695 W:940 H:355</div>
+          </div>
+        </div>
+      
+
+      <!-- DAX SPECIFICATIONS & CALCULATIONS SECTION FOR PAGE 03 -->
+      <div class="mt-4 border rounded-xl bg-slate-50 p-4 shadow-sm border-slate-300">
+        <div class="flex items-center justify-between border-b pb-3 mb-4 border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold bg-[#0F4C81] text-white">Page 03 DAX Blueprint</span>
+              <h2 class="text-base font-bold text-slate-900">Customer Performance</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Answering: "How effectively are we acquiring, retaining, and monetizing customers?"</p>
+          </div>
+          <span class="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-full shadow-xs">
+            🎯 Cohort Acquisition, Churn Diagnostics & Demographic Value
+          </span>
+        </div>
+
+        <!-- SECTION 1: CORE DAX MEASURES -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📐 Required DAX Measures & Formulas</span>
+            <span class="text-[10px] lowercase text-slate-400 font-normal">(5 measures defined)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY New Customers]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Acquisition</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY New Customers = 
+VAR CustomersInPeriod = VALUES(Sales[CustomerKey])
+VAR MinSelectedDate = MIN(&#x27;Calander&#x27;[Date])
+VAR MaxSelectedDate = MAX(&#x27;Calander&#x27;[Date])
+RETURN
+COUNTROWS(
+    FILTER(
+        CustomersInPeriod,
+        VAR FirstEverDate = 
+            CALCULATE(
+                MIN(Sales[OrderDate]), 
+                REMOVEFILTERS(&#x27;Calander&#x27;)
+            )
+        RETURN
+            FirstEverDate &gt;= MinSelectedDate &amp;&amp; FirstEverDate &lt;= MaxSelectedDate
+    )
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Counts customers whose lifetime first transaction ever occurred within the selected calendar timeframe.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY New Customers = 
+VAR CustomersInPeriod = VALUES(Sales[CustomerKey])
+VAR MinSelectedDate = MIN(&#x27;Calander&#x27;[Date])
+VAR MaxSelectedDate = MAX(&#x27;Calander&#x27;[Date])
+RETURN
+COUNTROWS(
+    FILTER(
+        CustomersInPeriod,
+        VAR FirstEverDate = 
+            CALCULATE(
+                MIN(Sales[OrderDate]), 
+                REMOVEFILTERS(&#x27;Calander&#x27;)
+            )
+        RETURN
+            FirstEverDate &gt;= MinSelectedDate &amp;&amp; FirstEverDate &lt;= MaxSelectedDate
+    )
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Count of CustomerKeys where Min(Lifetime OrderDate) ∈ Filtered Dates</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Whole Number (#,##0)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Lost Customers]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">Churn</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Lost Customers = 
+VAR CurrentCustomers = 
+    CALCULATETABLE(
+        VALUES(Sales[CustomerKey]),
+        &#x27;Calander&#x27;[Date]
+    )
+VAR PriorYearCustomers = 
+    CALCULATETABLE(
+        VALUES(Sales[CustomerKey]),
+        SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+    )
+RETURN
+COUNTROWS(
+    EXCEPT(PriorYearCustomers, CurrentCustomers)
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Calculates customer churn: customers who placed an order in the prior year but have not made any purchases in the current period.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Lost Customers = 
+VAR CurrentCustomers = 
+    CALCULATETABLE(
+        VALUES(Sales[CustomerKey]),
+        &#x27;Calander&#x27;[Date]
+    )
+VAR PriorYearCustomers = 
+    CALCULATETABLE(
+        VALUES(Sales[CustomerKey]),
+        SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+    )
+RETURN
+COUNTROWS(
+    EXCEPT(PriorYearCustomers, CurrentCustomers)
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Count(PriorYearCustomers \ CurrentYearCustomers)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Whole Number (#,##0)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY One-Time Customers]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-800">Segmentation</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY One-Time Customers = [CY Customers] - [CY Repeat Customers]
+
+CY One-Time Rate = 
+DIVIDE([CY One-Time Customers], [CY Customers], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Counts customers who placed exactly one order in the current timeframe, indicating potential churn risk.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY One-Time Customers = [CY Customers] - [CY Repeat Customers]
+
+CY One-Time Rate = 
+DIVIDE([CY One-Time Customers], [CY Customers], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Total CY Customers - Repeat Customers</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Whole Number (#,##0)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Orders per Customer]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-800">Engagement</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Orders per Customer = 
+DIVIDE([CY Orders], [CY Customers], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Average transaction frequency per buying customer across the period.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Orders per Customer = 
+DIVIDE([CY Orders], [CY Customers], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Total Orders / Total Buying Customers</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Decimal Number (0.0)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Customer Retention Rate]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800">Retention</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Customer Retention Rate = 
+VAR PriorYearCustomers = 
+    CALCULATETABLE(
+        VALUES(Sales[CustomerKey]),
+        SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+    )
+VAR RetainedCustomers = 
+    CALCULATETABLE(
+        VALUES(Sales[CustomerKey]),
+        &#x27;Calander&#x27;[Date],
+        PriorYearCustomers
+    )
+RETURN
+DIVIDE(COUNTROWS(RetainedCustomers), COUNTROWS(PriorYearCustomers), 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Proportion of prior year active customers who returned to make at least one purchase in the current year.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Customer Retention Rate = 
+VAR PriorYearCustomers = 
+    CALCULATETABLE(
+        VALUES(Sales[CustomerKey]),
+        SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+    )
+VAR RetainedCustomers = 
+    CALCULATETABLE(
+        VALUES(Sales[CustomerKey]),
+        &#x27;Calander&#x27;[Date],
+        PriorYearCustomers
+    )
+RETURN
+DIVIDE(COUNTROWS(RetainedCustomers), COUNTROWS(PriorYearCustomers), 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Retained Customers / Prior Year Customers</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (0.0%)</code></span>
+      </div>
+    </div>
+    
+          </div>
+        </div>
+
+        <!-- SECTION 2: VISUAL-TO-DATA BINDING MATRIX -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📊 Visual-to-Data Field & Measure Bindings</span>
+          </h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-[10px] uppercase tracking-wider text-slate-600 font-bold border-b border-slate-200">
+                  <th class="p-2">Visual Name / Slot</th>
+                  <th class="p-2">Visual Type</th>
+                  <th class="p-2">Axis / Rows / Columns</th>
+                  <th class="p-2">DAX Measures Applied</th>
+                  <th class="p-2">Formatting & Filter Logic</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">KPI Row: Customer Health Strip</td>
+          <td class="p-2 text-amber-700 font-medium">New Card Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">N/A (Card Strip)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[CY Customers], [CY New Customers], [CY Lost Customers], [CY Repeat Rate], [CY Sales per Customer]</td>
+          <td class="p-2 text-[10px] text-slate-600">New Customers highlighted green; Lost Customers highlighted red</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 1: New vs Lost Customers Monthly Trend</td>
+          <td class="p-2 text-amber-700 font-medium">Clustered Column Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">X-Axis: Calander[Short Month]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Columns: [CY New Customers] (#10B981 Emerald Green), [CY Lost Customers] (#EF4444 Crimson Red)</td>
+          <td class="p-2 text-[10px] text-slate-600">Net customer acquisition story; monthly cohort progression</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 2: Repeat vs One-Time by Country</td>
+          <td class="p-2 text-amber-700 font-medium">100% Stacked Bar Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Y-Axis: Territory[Country]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Segments: [CY Repeat Customers] (#0F4C81 Navy), [CY One-Time Customers] (#CBD5E1 Light Slate)</td>
+          <td class="p-2 text-[10px] text-slate-600">Data labels showing percentage of total; highlights customer stickiness per territory</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 3: Customer Value by Occupation</td>
+          <td class="p-2 text-amber-700 font-medium">Horizontal Bar Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Y-Axis: Customers[Occupation], X-Axis: [CY Sales]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Bars: [CY Sales], Tooltips: [CY Sales per Customer], [CY Orders per Customer], [CY Customers]</td>
+          <td class="p-2 text-[10px] text-slate-600">Sorted descending by [CY Sales]; data labels formatted currency</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 4: Demographics & Education Segmentation</td>
+          <td class="p-2 text-amber-700 font-medium">Clustered Column or Matrix</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">X-Axis/Rows: Customers[EducationLevel], Legend: Customers[Gender]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[CY Customers], [CY Sales], [CY Orders per Customer]</td>
+          <td class="p-2 text-[10px] text-slate-600">Cross-tabulates spending power across educational tiers and gender</td>
+        </tr>
+        
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ARCHITECTURAL IMPROVEMENTS & DATA MODELING NOTES -->
+        <div class="rounded-lg bg-blue-50/80 border border-blue-200 p-3 text-[11px] text-blue-900">
+          <div class="font-bold text-xs flex items-center gap-1.5 text-blue-950 mb-1.5">
+            <span>💡 Recommended Improvements & Power BI Best Practices</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-slate-700">
+            <li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Cohort Table Performance:</b> Using REMOVEFILTERS('Calander') inside CY New Customers ensures lifetime first order check is fully accurate regardless of date slicers on the page.</li><li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Customer Full Name Pre-Merge:</b> The Customers table in Power Query already merges Prefix, FirstName, LastName into Customers[Name], saving DAX memory and enabling fast table lookups.</li>
+          </ul>
+        </div>
+      </div>
+    
+      </div>
+
+      <!-- ========== PAGE 04: PRODUCT PERFORMANCE ========== -->
+      <div class="canvas-wrapper page-content" data-page="3" style="display:none">
+        <div class="text-xs font-semibold mt-2 mb-1" style="color:#0F4C81">Page 04 — Product Performance <span style="color:#94a3b8">| "Which products drive the business?"</span></div>
+        <div class="canvas">
+          <!-- TOP SHELL -->
+          <div class="shell-box" style="left:1.5%;top:1.8%;width:20%;height:5.5%">
+            <span class="shell-label">📊 AdventureWorks Dashboard</span>
+          </div>
+          <div class="shell-box" style="left:23%;top:1.8%;width:46%;height:5.5%">
+            <span class="shell-label">OVERVIEW&nbsp;&nbsp;|&nbsp;&nbsp;SALES&nbsp;&nbsp;|&nbsp;&nbsp;CUSTOMERS&nbsp;&nbsp;|&nbsp;&nbsp;<span class="nav-active">PRODUCTS</span>&nbsp;&nbsp;|&nbsp;&nbsp;GEO&nbsp;&nbsp;|&nbsp;&nbsp;RETURNS</span>
+          </div>
+          <div class="shell-box" style="left:70%;top:1.8%;width:14%;height:5.5%">
+            <span class="shell-label">🔘 Year Slicer</span>
+          </div>
+          <div class="shell-box" style="left:85%;top:1.8%;width:13%;height:5.5%">
+            <span class="shell-label">☰ Filter Panel</span>
+          </div>
+
+          <!-- Bookmark row -->
+          <div class="shell-box" style="left:1.5%;top:9%;width:35%;height:4%">
+            <span class="shell-label">View: <span class="nav-active">Sales Volume</span> | Profitability | Return Rate Risk</span>
+          </div>
+
+          <!-- VIS 1: Top 10 Products -->
+          <div class="vis-box" style="left:1.5%;top:15%;width:46%;height:47%">
+            <div class="vis-title">Top 10 Products by Revenue (CY vs PY)</div>
+            <div class="vis-type">📊 Clustered Bar Chart</div>
+            <div class="vis-detail">
+              <b>Y-Axis:</b> Product[ProductName] (TopN 10 by CY Sales)<br>
+              <b>X-Axis:</b><br>
+              &nbsp;&nbsp;[CY Sales] — #0F4C81<br>
+              &nbsp;&nbsp;[PY Sales] — #94A3B8<br>
+              <b>Data Labels:</b> On<br>
+              <b>Tooltip:</b> [Sales Growth], [CY Gross Margin]
+            </div>
+            <div class="coord-label">X:30 Y:160 W:900 H:510</div>
+          </div>
+
+          <!-- VIS 2: Scatter -->
+          <div class="vis-box" style="left:49%;top:15%;width:49.5%;height:47%">
+            <div class="vis-title">Price vs Volume (Elasticity View)</div>
+            <div class="vis-type">🔵 Scatter Chart</div>
+            <div class="vis-detail">
+              <b>Details:</b> Product[ProductName]<br>
+              <b>X-Axis:</b> Product[ProductPrice]<br>
+              <b>Y-Axis:</b> [CY Quantity]<br>
+              <b>Bubble Size:</b> [CY Gross Profit]<br>
+              <b>Legend:</b> Categories[CategoryName]<br>
+              <b>Purpose:</b> Shows price-volume tradeoff<br>
+              &nbsp;&nbsp;and profit contribution
+            </div>
+            <div class="coord-label">X:950 Y:160 W:940 H:510</div>
+          </div>
+
+          <!-- VIS 3: Full-width Matrix -->
+          <div class="vis-box" style="left:1.5%;top:64%;width:97%;height:33%">
+            <div class="vis-title">Master Product Hierarchy Table (Drillable Matrix)</div>
+            <div class="vis-type">📋 Matrix — Stepped layout, expandable</div>
+            <div class="vis-detail">
+              <b>Row Hierarchy:</b> CategoryName → SubcategoryName → ProductName → ProductSKU<br>
+              <b>Values:</b> Avg ProductPrice | Avg ProductCost | [CY Quantity] | [CY Sales] | [Formatted Sales Growth] | [CY Gross Margin] | [Return Rate]<br>
+              <b>Conditional Formatting:</b> Data bars on CY Sales; Icon set on Return Rate (⚠️ if > 3%); Color scale on Gross Margin
+            </div>
+            <div class="coord-label">X:30 Y:690 W:1860 H:360</div>
+          </div>
+        </div>
+      
+
+      <!-- DAX SPECIFICATIONS & CALCULATIONS SECTION FOR PAGE 04 -->
+      <div class="mt-4 border rounded-xl bg-slate-50 p-4 shadow-sm border-slate-300">
+        <div class="flex items-center justify-between border-b pb-3 mb-4 border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold bg-[#0F4C81] text-white">Page 04 DAX Blueprint</span>
+              <h2 class="text-base font-bold text-slate-900">Product Performance</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Answering: "Which specific products and SKUs drive the business versus drain margin?"</p>
+          </div>
+          <span class="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-full shadow-xs">
+            🎯 SKU-Level Profitability, Elasticity & Return Risk Watchlist
+          </span>
+        </div>
+
+        <!-- SECTION 1: CORE DAX MEASURES -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📐 Required DAX Measures & Formulas</span>
+            <span class="text-[10px] lowercase text-slate-400 font-normal">(6 measures defined)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Product Sales Rank]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Ranking</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Product Sales Rank = 
+RANKX(
+    ALLSELECTED(&#x27;Products lookup&#x27;[ProductName]),
+    [CY Sales],
+    ,
+    DESC,
+    Dense
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Dynamic ranking of products by revenue within the current slicer and filter selection.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Product Sales Rank = 
+RANKX(
+    ALLSELECTED(&#x27;Products lookup&#x27;[ProductName]),
+    [CY Sales],
+    ,
+    DESC,
+    Dense
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Dense Rank of [CY Sales] over ALLSELECTED Products</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Whole Number (#)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Top 10 Product Sales]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800">Top N Filter</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Top 10 Product Sales = 
+IF([Product Sales Rank] &lt;= 10, [CY Sales], BLANK())" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Filters and displays only the top 10 products by sales volume, suppressing all lower-ranked items.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Top 10 Product Sales = 
+IF([Product Sales Rank] &lt;= 10, [CY Sales], BLANK())</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">If Rank ≤ 10 Then [CY Sales] Else Blank()</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Avg Selling Price]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800">Pricing</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Avg Selling Price = 
+DIVIDE([CY Sales], [CY Quantity], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Realized average selling price per unit across transactions.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Avg Selling Price = 
+DIVIDE([CY Sales], [CY Quantity], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Total Sales / Total Units Sold</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Avg Product Cost]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-800">Costing</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Avg Product Cost = 
+DIVIDE([CY Total Cost], [CY Quantity], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Average unit procurement cost for units sold.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Avg Product Cost = 
+DIVIDE([CY Total Cost], [CY Quantity], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Total COGS / Total Units Sold</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Unit Margin]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Unit Economics</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Unit Margin = [Avg Selling Price] - [Avg Product Cost]" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Dollar contribution margin generated per unit sold.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Unit Margin = [Avg Selling Price] - [Avg Product Cost]</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Avg Selling Price - Avg Product Cost</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Return Rate Status Color]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">Conditional Color</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Return Rate Status Color = 
+SWITCH(
+    TRUE(),
+    [Return Rate] &gt; 0.03, &quot;#EF4444&quot;, /* High risk red */
+    [Return Rate] &gt; 0.02, &quot;#F59E0B&quot;, /* Warning amber */
+    &quot;#10B981&quot;                     /* Normal green */
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Hex color generator for icons and backgrounds to highlight return quality issues.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Return Rate Status Color = 
+SWITCH(
+    TRUE(),
+    [Return Rate] &gt; 0.03, &quot;#EF4444&quot;, /* High risk red */
+    [Return Rate] &gt; 0.02, &quot;#F59E0B&quot;, /* Warning amber */
+    &quot;#10B981&quot;                     /* Normal green */
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Color flag based on return threshold (>3% Red, 2-3% Amber, <2% Green)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Hex Color string</code></span>
+      </div>
+    </div>
+    
+          </div>
+        </div>
+
+        <!-- SECTION 2: VISUAL-TO-DATA BINDING MATRIX -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📊 Visual-to-Data Field & Measure Bindings</span>
+          </h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-[10px] uppercase tracking-wider text-slate-600 font-bold border-b border-slate-200">
+                  <th class="p-2">Visual Name / Slot</th>
+                  <th class="p-2">Visual Type</th>
+                  <th class="p-2">Axis / Rows / Columns</th>
+                  <th class="p-2">DAX Measures Applied</th>
+                  <th class="p-2">Formatting & Filter Logic</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">View Selector Bookmark Strip</td>
+          <td class="p-2 text-amber-700 font-medium">Button Slicer</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Bookmark Actions</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Switches visual between Volume, Margin, and Return Risk focus</td>
+          <td class="p-2 text-[10px] text-slate-600">Active state styling with #0F4C81 fill</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 1: Top 10 Products by Revenue (CY vs PY)</td>
+          <td class="p-2 text-amber-700 font-medium">Clustered Bar Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Y-Axis: Products lookup[ProductName] (Top 10 Filtered)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Bars: [CY Sales] (#0F4C81), [PY Sales] (#94A3B8); Tooltips: [Sales Growth Formatted], [CY Gross Margin]</td>
+          <td class="p-2 text-[10px] text-slate-600">Sorted descending by CY Sales; data labels enabled</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 2: Price vs Volume Elasticity Scatter</td>
+          <td class="p-2 text-amber-700 font-medium">Scatter Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Details: Products lookup[ProductName], Legend: CategoryName</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">X-Axis: Products lookup[ProductPrice], Y-Axis: [CY Quantity], Bubble Size: [CY Gross Profit]</td>
+          <td class="p-2 text-[10px] text-slate-600">Reveals high-volume low-margin vs high-margin specialty items</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 3: Master Product Hierarchy Matrix</td>
+          <td class="p-2 text-amber-700 font-medium">Matrix (Stepped Hierarchy)</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Rows: CategoryName → SubcategoryName → ProductName → ProductSKU</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[Avg Selling Price], [Avg Product Cost], [CY Quantity], [CY Sales], [Sales Growth Formatted], [CY Gross Margin], [Return Rate]</td>
+          <td class="p-2 text-[10px] text-slate-600">Data bars on CY Sales; color scale on CY Gross Margin; icon flag on Return Rate (>3% ⚠️)</td>
+        </tr>
+        
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ARCHITECTURAL IMPROVEMENTS & DATA MODELING NOTES -->
+        <div class="rounded-lg bg-blue-50/80 border border-blue-200 p-3 text-[11px] text-blue-900">
+          <div class="font-bold text-xs flex items-center gap-1.5 text-blue-950 mb-1.5">
+            <span>💡 Recommended Improvements & Power BI Best Practices</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-slate-700">
+            <li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Hierarchical Drill Navigation:</b> Build a formal Power BI model hierarchy 'Product Hierarchy' (CategoryName → SubcategoryName → ProductName → ProductSKU) to enable one-click expand/collapse in the matrix.</li><li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Report-Page Tooltip Binding:</b> Configure Visual 1 and Visual 2 to target the dedicated hidden 'Tooltip' page on hover for instant SKU, price, margin, and sparkline trends.</li>
+          </ul>
+        </div>
+      </div>
+    
+      </div>
+
+      <!-- ========== PAGE 05: GEOGRAPHY ========== -->
+      <div class="canvas-wrapper page-content" data-page="4" style="display:none">
+        <div class="text-xs font-semibold mt-2 mb-1" style="color:#0F4C81">Page 05 — Geographic Performance <span style="color:#94a3b8">| "Where is the business performing?"</span></div>
+        <div class="canvas">
+          <!-- TOP SHELL -->
+          <div class="shell-box" style="left:1.5%;top:1.8%;width:20%;height:5.5%">
+            <span class="shell-label">📊 AdventureWorks Dashboard</span>
+          </div>
+          <div class="shell-box" style="left:23%;top:1.8%;width:46%;height:5.5%">
+            <span class="shell-label">OVERVIEW&nbsp;&nbsp;|&nbsp;&nbsp;SALES&nbsp;&nbsp;|&nbsp;&nbsp;CUSTOMERS&nbsp;&nbsp;|&nbsp;&nbsp;PRODUCTS&nbsp;&nbsp;|&nbsp;&nbsp;<span class="nav-active">GEO</span>&nbsp;&nbsp;|&nbsp;&nbsp;RETURNS</span>
+          </div>
+          <div class="shell-box" style="left:70%;top:1.8%;width:14%;height:5.5%">
+            <span class="shell-label">🔘 Year Slicer</span>
+          </div>
+          <div class="shell-box" style="left:85%;top:1.8%;width:13%;height:5.5%">
+            <span class="shell-label">☰ Filter Panel</span>
+          </div>
+
+          <!-- KPI strip -->
+          <div class="kpi-box" style="left:1.5%;top:9%;width:23%;height:13%">
+            <div class="kpi-title">🌍 Territories Active</div>
+            <div class="kpi-sub">Count: 10 territories<br>3 Continents, 6 Countries</div>
+          </div>
+          <div class="kpi-box" style="left:25.5%;top:9%;width:23%;height:13%">
+            <div class="kpi-title">🏆 Top Country (Revenue)</div>
+            <div class="kpi-sub">TOPN 1 by [CY Sales]<br>with [Sales Growth]</div>
+          </div>
+          <div class="kpi-box" style="left:49.5%;top:9%;width:23%;height:13%">
+            <div class="kpi-title">📈 Highest Margin Country</div>
+            <div class="kpi-sub">TOPN 1 by [CY Gross Margin]</div>
+          </div>
+          <div class="kpi-box" style="left:73.5%;top:9%;width:25%;height:13%">
+            <div class="kpi-title">⚠️ Highest Return Rate</div>
+            <div class="kpi-sub">TOPN 1 by [Return Rate]<br>Warning flagged</div>
+          </div>
+
+          <!-- VIS 1: Map -->
+          <div class="vis-box" style="left:1.5%;top:24%;width:56%;height:44%">
+            <div class="vis-title">Revenue Distribution Map</div>
+            <div class="vis-type">🗺️ Shape Map / Bubble Map</div>
+            <div class="vis-detail">
+              <b>Location:</b> Territory[Country]<br>
+              <b>Bubble Size:</b> [CY Sales]<br>
+              <b>Color Saturation:</b> [Sales Growth]<br>
+              <b>Tooltip:</b> [CY Customers], [CY Gross Margin],<br>
+              &nbsp;&nbsp;[Return Rate], [Sales per Customer]
+            </div>
+            <div class="coord-label">X:30 Y:255 W:1100 H:480</div>
+          </div>
+
+          <!-- VIS 2: Decomposition Tree -->
+          <div class="vis-box" style="left:59%;top:24%;width:39.5%;height:44%">
+            <div class="vis-title">Revenue Drill-Down Tree</div>
+            <div class="vis-type">🌳 Decomposition Tree</div>
+            <div class="vis-detail">
+              <b>Analyze:</b> [CY Sales]<br>
+              <b>Explain By:</b><br>
+              &nbsp;&nbsp;Territory[Continent]<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;→ Territory[Country]<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ Territory[Region]<br>
+              <b>Purpose:</b> Executive ad-hoc drilldown
+            </div>
+            <div class="coord-label">X:1150 Y:255 W:740 H:480</div>
+          </div>
+
+          <!-- VIS 3: Scorecard Table -->
+          <div class="vis-box" style="left:1.5%;top:70%;width:97%;height:27%">
+            <div class="vis-title">Territory Performance Scorecard</div>
+            <div class="vis-type">📋 Matrix (Continent → Country → Region)</div>
+            <div class="vis-detail">
+              <b>Row Hierarchy:</b> Continent → Country → Region<br>
+              <b>Values:</b> [CY Sales] | [PY Sales] | [Sales Growth] | [CY Customers] | [Sales per Customer] | [CY Gross Margin] | [Return Rate]<br>
+              <b>Conditional Formatting:</b> Growth colored (green/red), Data bars on CY Sales
+            </div>
+            <div class="coord-label">X:30 Y:755 W:1860 H:295</div>
+          </div>
+        </div>
+      
+
+      <!-- DAX SPECIFICATIONS & CALCULATIONS SECTION FOR PAGE 05 -->
+      <div class="mt-4 border rounded-xl bg-slate-50 p-4 shadow-sm border-slate-300">
+        <div class="flex items-center justify-between border-b pb-3 mb-4 border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold bg-[#0F4C81] text-white">Page 05 DAX Blueprint</span>
+              <h2 class="text-base font-bold text-slate-900">Geographic Performance</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Answering: "Where in the world is the business winning, lagging, or experiencing return friction?"</p>
+          </div>
+          <span class="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-full shadow-xs">
+            🎯 Global Territory Distribution & Regional Decomposition
+          </span>
+        </div>
+
+        <!-- SECTION 1: CORE DAX MEASURES -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📐 Required DAX Measures & Formulas</span>
+            <span class="text-[10px] lowercase text-slate-400 font-normal">(5 measures defined)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Active Territories Count]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Coverage</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Active Territories Count = 
+CALCULATE(
+    DISTINCTCOUNT(Sales[TerritoryKey]),
+    &#x27;Calander&#x27;[Date]
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Total number of geographic sales territories producing transactions in the selected period.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Active Territories Count = 
+CALCULATE(
+    DISTINCTCOUNT(Sales[TerritoryKey]),
+    &#x27;Calander&#x27;[Date]
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">DistinctCount(TerritoryKey)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Whole Number (#)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Top Country by Sales]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Leadership</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Top Country by Sales = 
+CONCATENATEX(
+    TOPN(1, VALUES(Territory[Country]), [CY Sales], DESC),
+    Territory[Country],
+    &quot;, &quot;
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Dynamic text measure returning the name of the top revenue-generating country.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Top Country by Sales = 
+CONCATENATEX(
+    TOPN(1, VALUES(Territory[Country]), [CY Sales], DESC),
+    Territory[Country],
+    &quot;, &quot;
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">TOPN(1, Country, CY Sales)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Text String</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Top Country by Gross Margin]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800">Profitability</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Top Country by Gross Margin = 
+CONCATENATEX(
+    TOPN(1, VALUES(Territory[Country]), [CY Gross Margin], DESC),
+    Territory[Country],
+    &quot;, &quot;
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Returns the country delivering the highest gross profit margin percentage.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Top Country by Gross Margin = 
+CONCATENATEX(
+    TOPN(1, VALUES(Territory[Country]), [CY Gross Margin], DESC),
+    Territory[Country],
+    &quot;, &quot;
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">TOPN(1, Country, CY Gross Margin)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Text String</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Top Country by Return Rate]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">Risk Alert</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Top Country by Return Rate = 
+CONCATENATEX(
+    TOPN(1, VALUES(Territory[Country]), [Return Rate], DESC),
+    Territory[Country],
+    &quot;, &quot;
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Flags the country with the most severe product return rate for executive remediation.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Top Country by Return Rate = 
+CONCATENATEX(
+    TOPN(1, VALUES(Territory[Country]), [Return Rate], DESC),
+    Territory[Country],
+    &quot;, &quot;
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">TOPN(1, Country, Return Rate)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Text String</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Territory Revenue Share]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-800">Distribution %</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Territory Revenue Share = 
+DIVIDE(
+    [CY Sales],
+    CALCULATE([CY Sales], ALLSELECTED(Territory)),
+    0
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Calculates the percentage contribution of a specific territory to total global sales.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Territory Revenue Share = 
+DIVIDE(
+    [CY Sales],
+    CALCULATE([CY Sales], ALLSELECTED(Territory)),
+    0
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">CY Sales / ALLSELECTED(Territory) CY Sales</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (0.0%)</code></span>
+      </div>
+    </div>
+    
+          </div>
+        </div>
+
+        <!-- SECTION 2: VISUAL-TO-DATA BINDING MATRIX -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📊 Visual-to-Data Field & Measure Bindings</span>
+          </h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-[10px] uppercase tracking-wider text-slate-600 font-bold border-b border-slate-200">
+                  <th class="p-2">Visual Name / Slot</th>
+                  <th class="p-2">Visual Type</th>
+                  <th class="p-2">Axis / Rows / Columns</th>
+                  <th class="p-2">DAX Measures Applied</th>
+                  <th class="p-2">Formatting & Filter Logic</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">KPI Row: Global Geographic Strip</td>
+          <td class="p-2 text-amber-700 font-medium">New Card Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">N/A (Card Strip)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[Active Territories Count], [Top Country by Sales], [Top Country by Gross Margin], [Top Country by Return Rate]</td>
+          <td class="p-2 text-[10px] text-slate-600">Executive summary badges with secondary revenue and margin figures</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 1: Global Revenue Distribution Map</td>
+          <td class="p-2 text-amber-700 font-medium">Azure Map / Shape Map / Bubble Map</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Location: Territory[Country]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Bubble Size: [CY Sales], Bubble Color: [Sales Growth], Tooltips: [CY Customers], [CY Gross Margin], [Return Rate], [CY Sales per Customer]</td>
+          <td class="p-2 text-[10px] text-slate-600">Diverging color scale on bubble fill: Green (high growth) to Red (negative growth)</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 2: Revenue Drill-Down Tree</td>
+          <td class="p-2 text-amber-700 font-medium">Decomposition Tree Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Explain By: Continent → Country → Region</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Analyze: [CY Sales]</td>
+          <td class="p-2 text-[10px] text-slate-600">Data bars on branches; allows ad-hoc root-cause drill-downs</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 3: Territory Performance Scorecard</td>
+          <td class="p-2 text-amber-700 font-medium">Matrix Table</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Rows: Territory[Continent] → Territory[Country] → Territory[Region]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[CY Sales], [PY Sales], [Sales Growth Formatted], [CY Customers], [CY Sales per Customer], [CY Gross Margin], [Return Rate]</td>
+          <td class="p-2 text-[10px] text-slate-600">Data bars on CY Sales; conditional color icons on Return Rate</td>
+        </tr>
+        
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ARCHITECTURAL IMPROVEMENTS & DATA MODELING NOTES -->
+        <div class="rounded-lg bg-blue-50/80 border border-blue-200 p-3 text-[11px] text-blue-900">
+          <div class="font-bold text-xs flex items-center gap-1.5 text-blue-950 mb-1.5">
+            <span>💡 Recommended Improvements & Power BI Best Practices</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-slate-700">
+            <li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Data Category Geotagging:</b> In Power BI Data View, ensure Territory[Country] is categorized as 'Country/Region' and Territory[Continent] as 'Continent' to prevent mapping geocoding mismatches.</li><li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Returns to Territory Join:</b> Verify that 'Returns Data'[TerritoryKey] actively relates to Territory[SalesTerritoryKey] so return rate maps accurately filter at regional levels.</li>
+          </ul>
+        </div>
+      </div>
+    
+      </div>
+
+      <!-- ========== PAGE 06: RETURNS ========== -->
+      <div class="canvas-wrapper page-content" data-page="5" style="display:none">
+        <div class="text-xs font-semibold mt-2 mb-1" style="color:#0F4C81">Page 06 — Returns & Quality <span style="color:#94a3b8">| "Where are returns creating problems?"</span></div>
+        <div class="canvas">
+          <!-- TOP SHELL -->
+          <div class="shell-box" style="left:1.5%;top:1.8%;width:20%;height:5.5%">
+            <span class="shell-label">📊 AdventureWorks Dashboard</span>
+          </div>
+          <div class="shell-box" style="left:23%;top:1.8%;width:46%;height:5.5%">
+            <span class="shell-label">OVERVIEW&nbsp;&nbsp;|&nbsp;&nbsp;SALES&nbsp;&nbsp;|&nbsp;&nbsp;CUSTOMERS&nbsp;&nbsp;|&nbsp;&nbsp;PRODUCTS&nbsp;&nbsp;|&nbsp;&nbsp;GEO&nbsp;&nbsp;|&nbsp;&nbsp;<span class="nav-active">RETURNS</span></span>
+          </div>
+          <div class="shell-box" style="left:70%;top:1.8%;width:14%;height:5.5%">
+            <span class="shell-label">🔘 Year Slicer</span>
+          </div>
+          <div class="shell-box" style="left:85%;top:1.8%;width:13%;height:5.5%">
+            <span class="shell-label">☰ Filter Panel</span>
+          </div>
+
+          <!-- KPI ROW -->
+          <div class="kpi-box" style="left:1.5%;top:9%;width:23%;height:13%">
+            <div class="kpi-title">📦 CY Return Quantity</div>
+            <div class="kpi-sub">[CY Return Quantity]<br>SUM(ReturnQuantity) for CY</div>
+            <div class="coord-label">W:450 H:140</div>
+          </div>
+          <div class="kpi-box" style="left:25.5%;top:9%;width:23%;height:13%">
+            <div class="kpi-title">📊 Return Rate %</div>
+            <div class="kpi-sub">[Return Rate]<br>Green < 2%, Red > 3%</div>
+          </div>
+          <div class="kpi-box" style="left:49.5%;top:9%;width:23%;height:13%">
+            <div class="kpi-title">📈 Return Growth vs PY</div>
+            <div class="kpi-sub">[Return Growth] ▲▼<br>CY vs PY Return Qty</div>
+          </div>
+          <div class="kpi-box" style="left:73.5%;top:9%;width:25%;height:13%">
+            <div class="kpi-title">💸 Est. Return Cost</div>
+            <div class="kpi-sub">Σ(ReturnQty × ProductCost)<br>Estimated loss value</div>
+          </div>
+
+          <!-- VIS 1: Monthly Return Trend -->
+          <div class="vis-box" style="left:1.5%;top:24%;width:56%;height:38%">
+            <div class="vis-title">Monthly Return Quantity & Rate Trend</div>
+            <div class="vis-type">📊 Line & Clustered Column Chart</div>
+            <div class="vis-detail">
+              <b>X-Axis:</b> Calendar[Month]<br>
+              <b>Column:</b> [CY Return Quantity] — #EF4444<br>
+              <b>Line (2nd Axis):</b> [Return Rate] — #0F4C81<br>
+              <b>Purpose:</b> Spot seasonal return spikes
+            </div>
+            <div class="coord-label">X:30 Y:255 W:1100 H:420</div>
+          </div>
+
+          <!-- VIS 2: Return Rate by Subcategory -->
+          <div class="vis-box" style="left:59%;top:24%;width:39.5%;height:38%">
+            <div class="vis-title">Return Rate by Subcategory</div>
+            <div class="vis-type">📊 Bar Chart + Reference Line</div>
+            <div class="vis-detail">
+              <b>Y-Axis:</b> Subcategories[SubcategoryName]<br>
+              <b>X-Axis:</b> [Return Rate]<br>
+              <b>Reference Line:</b> Company avg (~2.2%)<br>
+              <b>Color:</b> Bars exceeding avg → Red<br>
+              <b>Sort:</b> Descending by Return Rate
+            </div>
+            <div class="coord-label">X:1150 Y:255 W:740 H:420</div>
+          </div>
+
+          <!-- VIS 3: Watchlist Table -->
+          <div class="vis-box" style="left:1.5%;top:64%;width:97%;height:33%">
+            <div class="vis-title">Return Watchlist — High Risk Products (ReturnQty > 10)</div>
+            <div class="vis-type">📋 Table — Filtered, sorted desc by Return Rate</div>
+            <div class="vis-detail">
+              <b>Filter:</b> CY Return Quantity > 10<br>
+              <b>Columns:</b> ProductName | CategoryName | [CY Quantity] (Sold) | [CY Return Quantity] (Returned) | [Return Rate] (color flagged) | Est. Cost (ReturnQty × ProductCost)<br>
+              <b>Conditional Formatting:</b> Return Rate — red background if > 3%; amber if 2-3%
+            </div>
+            <div class="coord-label">X:30 Y:695 W:1860 H:355</div>
+          </div>
+        </div>
+      
+
+      <!-- DAX SPECIFICATIONS & CALCULATIONS SECTION FOR PAGE 06 -->
+      <div class="mt-4 border rounded-xl bg-slate-50 p-4 shadow-sm border-slate-300">
+        <div class="flex items-center justify-between border-b pb-3 mb-4 border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold bg-[#0F4C81] text-white">Page 06 DAX Blueprint</span>
+              <h2 class="text-base font-bold text-slate-900">Returns & Quality</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Answering: "Where are returns eroding profits and which items require immediate QA attention?"</p>
+          </div>
+          <span class="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-full shadow-xs">
+            🎯 Quality Control, Financial Return Cost & Defect Watchlist
+          </span>
+        </div>
+
+        <!-- SECTION 1: CORE DAX MEASURES -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📐 Required DAX Measures & Formulas</span>
+            <span class="text-[10px] lowercase text-slate-400 font-normal">(5 measures defined)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Return Growth]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">Trend %</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="PY Return Quantity = 
+CALCULATE(
+    [CY Return Quantity],
+    SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+)
+
+Return Growth = 
+DIVIDE([CY Return Quantity] - [PY Return Quantity], [PY Return Quantity], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Calculates year-over-year rate of change in returned physical units.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>PY Return Quantity = 
+CALCULATE(
+    [CY Return Quantity],
+    SAMEPERIODLASTYEAR(&#x27;Calander&#x27;[Date])
+)
+
+Return Growth = 
+DIVIDE([CY Return Quantity] - [PY Return Quantity], [PY Return Quantity], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">(CY Returns - PY Returns) / PY Returns</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (+0.0%;-0.0%)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Return Growth Formatted]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-800">Indicator</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Return Growth Formatted = 
+VAR GrowthVal = [Return Growth]
+RETURN
+SWITCH(
+    TRUE(),
+    ISBLANK([PY Return Quantity]), &quot;New&quot;,
+    GrowthVal &gt; 0, &quot;▲ +&quot; &amp; FORMAT(GrowthVal, &quot;0.0%&quot;),
+    GrowthVal &lt; 0, &quot;▼ &quot; &amp; FORMAT(GrowthVal, &quot;0.0%&quot;),
+    &quot;— 0.0%&quot;
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Callout indicator displaying return trends with directional signs.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Return Growth Formatted = 
+VAR GrowthVal = [Return Growth]
+RETURN
+SWITCH(
+    TRUE(),
+    ISBLANK([PY Return Quantity]), &quot;New&quot;,
+    GrowthVal &gt; 0, &quot;▲ +&quot; &amp; FORMAT(GrowthVal, &quot;0.0%&quot;),
+    GrowthVal &lt; 0, &quot;▼ &quot; &amp; FORMAT(GrowthVal, &quot;0.0%&quot;),
+    &quot;— 0.0%&quot;
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Directional formatted return trend string</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Text String</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[CY Est Return Cost]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">Financial Loss</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="CY Est Return Cost = 
+CALCULATE(
+    SUMX(
+        &#x27;Returns Data&#x27;,
+        &#x27;Returns Data&#x27;[ReturnQuantity] * RELATED(&#x27;Products lookup&#x27;[ProductCost])
+    ),
+    USERELATIONSHIP(&#x27;Returns Data&#x27;[ReturnDate], &#x27;Calander&#x27;[Date])
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Quantifies the true financial loss of product returns by multiplying returned units by their manufacturing/procurement cost.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>CY Est Return Cost = 
+CALCULATE(
+    SUMX(
+        &#x27;Returns Data&#x27;,
+        &#x27;Returns Data&#x27;[ReturnQuantity] * RELATED(&#x27;Products lookup&#x27;[ProductCost])
+    ),
+    USERELATIONSHIP(&#x27;Returns Data&#x27;[ReturnDate], &#x27;Calander&#x27;[Date])
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Σ (ReturnQuantity × ProductCost)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Total Return Rate Benchmark]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Benchmark</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Total Return Rate Benchmark = 
+CALCULATE(
+    [Return Rate],
+    ALLSELECTED(&#x27;Products lookup&#x27;)
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Calculates global average return rate benchmark across all products for comparative reference lines.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Total Return Rate Benchmark = 
+CALCULATE(
+    [Return Rate],
+    ALLSELECTED(&#x27;Products lookup&#x27;)
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Return Rate ignoring product-level slice context</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (0.00%)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Is High Risk Return Product]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800">Filter Flag</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Is High Risk Return Product = 
+IF([CY Return Quantity] &gt; 10 &amp;&amp; [Return Rate] &gt; 0.02, 1, 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Binary flag filter identifying problematic products with significant volume and above-average return rates.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Is High Risk Return Product = 
+IF([CY Return Quantity] &gt; 10 &amp;&amp; [Return Rate] &gt; 0.02, 1, 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">1 if ReturnQty > 10 and ReturnRate > 2%, else 0</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Binary (1 / 0)</code></span>
+      </div>
+    </div>
+    
+          </div>
+        </div>
+
+        <!-- SECTION 2: VISUAL-TO-DATA BINDING MATRIX -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📊 Visual-to-Data Field & Measure Bindings</span>
+          </h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-[10px] uppercase tracking-wider text-slate-600 font-bold border-b border-slate-200">
+                  <th class="p-2">Visual Name / Slot</th>
+                  <th class="p-2">Visual Type</th>
+                  <th class="p-2">Axis / Rows / Columns</th>
+                  <th class="p-2">DAX Measures Applied</th>
+                  <th class="p-2">Formatting & Filter Logic</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">KPI Row: Returns & Quality Cards</td>
+          <td class="p-2 text-amber-700 font-medium">New Card Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">N/A (Card Strip)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[CY Return Quantity], [Return Rate], [Return Growth Formatted], [CY Est Return Cost]</td>
+          <td class="p-2 text-[10px] text-slate-600">Est. Return Cost formatted as currency ($M/$K); Return Rate color-flagged</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 1: Monthly Return Quantity & Rate Trend</td>
+          <td class="p-2 text-amber-700 font-medium">Line & Clustered Column Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">X-Axis: Calander[Short Month], Secondary Y-Axis: Return Rate %</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Columns: [CY Return Quantity] (#EF4444 Crimson), Line: [Return Rate] (#0F4C81 Navy)</td>
+          <td class="p-2 text-[10px] text-slate-600">Highlights seasonal quality spikes following major holiday volume</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 2: Return Rate by Subcategory</td>
+          <td class="p-2 text-amber-700 font-medium">Clustered Bar Chart + Reference Line</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Y-Axis: Products lookup[SubcategoryName], X-Axis: [Return Rate]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Bar: [Return Rate], Analytics Reference Line: [Total Return Rate Benchmark] (~2.2%)</td>
+          <td class="p-2 text-[10px] text-slate-600">Sorted descending by Return Rate; bars exceeding benchmark colored red</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 3: Return Watchlist — High Risk Products</td>
+          <td class="p-2 text-amber-700 font-medium">Table Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Filter: [Is High Risk Return Product] = 1</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Columns: ProductName, CategoryName, [CY Quantity], [CY Return Quantity], [Return Rate], [CY Est Return Cost]</td>
+          <td class="p-2 text-[10px] text-slate-600">Sorted descending by [Return Rate]; Red background if > 3%, Amber if 2-3%</td>
+        </tr>
+        
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ARCHITECTURAL IMPROVEMENTS & DATA MODELING NOTES -->
+        <div class="rounded-lg bg-blue-50/80 border border-blue-200 p-3 text-[11px] text-blue-900">
+          <div class="font-bold text-xs flex items-center gap-1.5 text-blue-950 mb-1.5">
+            <span>💡 Recommended Improvements & Power BI Best Practices</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-slate-700">
+            <li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Return Date Relationship:</b> Ensure the model's 'Returns Data'[ReturnDate] connects to 'Calander'[Date] (via USERELATIONSHIP in DAX or active link) so monthly return trends sync with sales date slicers.</li><li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Financial Cost Impact:</b> Focusing executive attention on [CY Est Return Cost] rather than raw return quantity directs engineering and QA teams to the costliest product defects first.</li>
+          </ul>
+        </div>
+      </div>
+    
+      </div>
+
+      <!-- ========== PAGE 07: TOOLTIP (HIDDEN) ========== -->
+      <div class="canvas-wrapper page-content" data-page="6" style="display:none">
+        <div class="text-xs font-semibold mt-2 mb-1" style="color:#0F4C81">Hidden — Tooltip Page <span style="color:#94a3b8">| Canvas: 320 × 240 px (custom small size)</span></div>
+        <div style="position:relative;width:320px;height:240px;border:2px solid var(--border);border-radius:8px;background:#f8fafc;overflow:hidden;">
+          <div class="kpi-box" style="left:4%;top:4%;width:92%;height:22%">
+            <div class="kpi-title">🏷️ Product SKU & Full Name</div>
+            <div class="kpi-sub">Product[ProductSKU], Product[ProductName]</div>
+          </div>
+          <div class="vis-box" style="left:4%;top:30%;width:92%;height:35%">
+            <div class="vis-title">Last 6 Months Sales Sparkline</div>
+            <div class="vis-type">📈 Sparkline / Small Line Chart</div>
+            <div class="vis-detail">
+              <b>Axis:</b> Calendar[Month] (last 6)<br>
+              <b>Value:</b> [CY Sales]
+            </div>
+          </div>
+          <div class="vis-box" style="left:4%;top:68%;width:30%;height:28%">
+            <div class="vis-title" style="font-size:8px">Price</div>
+            <div class="vis-detail">ProductPrice</div>
+          </div>
+          <div class="vis-box" style="left:36%;top:68%;width:30%;height:28%">
+            <div class="vis-title" style="font-size:8px">Margin %</div>
+            <div class="vis-detail">[Gross Margin]</div>
+          </div>
+          <div class="vis-box" style="left:68%;top:68%;width:28%;height:28%">
+            <div class="vis-title" style="font-size:8px">Return %</div>
+            <div class="vis-detail">[Return Rate]</div>
+          </div>
+        </div>
+      
+
+      <!-- DAX SPECIFICATIONS & CALCULATIONS SECTION FOR PAGE 07 -->
+      <div class="mt-4 border rounded-xl bg-slate-50 p-4 shadow-sm border-slate-300">
+        <div class="flex items-center justify-between border-b pb-3 mb-4 border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold bg-[#0F4C81] text-white">Page 07 DAX Blueprint</span>
+              <h2 class="text-base font-bold text-slate-900">Product Hover Tooltip</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Answering: "Instant context on SKU, unit price, margin %, return % and trailing 6-month sales sparkline."</p>
+          </div>
+          <span class="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-full shadow-xs">
+            🎯 Micro-Level Product Context on Visual Hover
+          </span>
+        </div>
+
+        <!-- SECTION 1: CORE DAX MEASURES -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📐 Required DAX Measures & Formulas</span>
+            <span class="text-[10px] lowercase text-slate-400 font-normal">(3 measures defined)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Tooltip Product Header]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-800">Header</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Tooltip Product Header = 
+SELECTEDVALUE(&#x27;Products lookup&#x27;[ProductSKU], &quot;SKU&quot;) &amp; &quot; — &quot; &amp; 
+SELECTEDVALUE(&#x27;Products lookup&#x27;[ProductName], &quot;Product Details&quot;)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Generates dynamic title combining Product SKU and Product Name for the tooltip banner card.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Tooltip Product Header = 
+SELECTEDVALUE(&#x27;Products lookup&#x27;[ProductSKU], &quot;SKU&quot;) &amp; &quot; — &quot; &amp; 
+SELECTEDVALUE(&#x27;Products lookup&#x27;[ProductName], &quot;Product Details&quot;)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">SKU & ' — ' & ProductName</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Text String</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Sales Last 6 Months]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Sparkline</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Sales Last 6 Months = 
+VAR MaxCalendarDate = MAX(&#x27;Calander&#x27;[Date])
+RETURN
+CALCULATE(
+    [CY Sales],
+    DATESINPERIOD(&#x27;Calander&#x27;[Date], MaxCalendarDate, -6, MONTH)
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Calculates revenue trend across the trailing 6 months relative to the filtered calendar endpoint.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Sales Last 6 Months = 
+VAR MaxCalendarDate = MAX(&#x27;Calander&#x27;[Date])
+RETURN
+CALCULATE(
+    [CY Sales],
+    DATESINPERIOD(&#x27;Calander&#x27;[Date], MaxCalendarDate, -6, MONTH)
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">CY Sales evaluated over DATESINPERIOD(Date, -6, MONTH)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Product Unit Price]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Price</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Product Current Price = 
+SELECTEDVALUE(&#x27;Products lookup&#x27;[ProductPrice], BLANK())" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Extracts catalog retail price for the single hovered product.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Product Current Price = 
+SELECTEDVALUE(&#x27;Products lookup&#x27;[ProductPrice], BLANK())</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">SelectedValue(ProductPrice)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+          </div>
+        </div>
+
+        <!-- SECTION 2: VISUAL-TO-DATA BINDING MATRIX -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📊 Visual-to-Data Field & Measure Bindings</span>
+          </h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-[10px] uppercase tracking-wider text-slate-600 font-bold border-b border-slate-200">
+                  <th class="p-2">Visual Name / Slot</th>
+                  <th class="p-2">Visual Type</th>
+                  <th class="p-2">Axis / Rows / Columns</th>
+                  <th class="p-2">DAX Measures Applied</th>
+                  <th class="p-2">Formatting & Filter Logic</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Tooltip Banner Card</td>
+          <td class="p-2 text-amber-700 font-medium">Card Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">N/A (Banner Top)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[Tooltip Product Header]</td>
+          <td class="p-2 text-[10px] text-slate-600">Bold 10pt title; shows SKU and Name</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual: 6-Month Sales Sparkline</td>
+          <td class="p-2 text-amber-700 font-medium">Line Chart (Compact)</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">X-Axis: Calander[Short Month] (Last 6 Months)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Line: [Sales Last 6 Months] (#0F4C81)</td>
+          <td class="p-2 text-[10px] text-slate-600">Minimalist sparkline style: hide axis titles and gridlines</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Mini KPI Strip: Price, Margin %, Return %</td>
+          <td class="p-2 text-amber-700 font-medium">Multi-Row Card / 3 Mini Cards</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">N/A (Bottom Strip)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[Product Current Price], [CY Gross Margin], [Return Rate]</td>
+          <td class="p-2 text-[10px] text-slate-600">Compact callout cards showing unit economics</td>
+        </tr>
+        
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ARCHITECTURAL IMPROVEMENTS & DATA MODELING NOTES -->
+        <div class="rounded-lg bg-blue-50/80 border border-blue-200 p-3 text-[11px] text-blue-900">
+          <div class="font-bold text-xs flex items-center gap-1.5 text-blue-950 mb-1.5">
+            <span>💡 Recommended Improvements & Power BI Best Practices</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-slate-700">
+            <li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Page Type Tooltip Setting:</b> In Power BI Page Information settings, set 'Allow use as tooltip' = ON, and Canvas size = Tooltip (320 × 240 px).</li><li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Automatic Filter Context Inheritance:</b> When hovering over any chart element featuring Products lookup[ProductName], Power BI automatically passes the selected product's filter context to all measures on this tooltip page.</li>
+          </ul>
+        </div>
+      </div>
+    
+      </div>
+
+      <!-- ========== PAGE 08: DRILLTHROUGH (HIDDEN) ========== -->
+      <div class="canvas-wrapper page-content" data-page="7" style="display:none">
+        <div class="text-xs font-semibold mt-2 mb-1" style="color:#0F4C81">Hidden — Drillthrough Page <span style="color:#94a3b8">| Target field: CustomerKey | Canvas: 1920 × 1080</span></div>
+        <div class="canvas">
+          <!-- Back button -->
+          <div class="shell-box" style="left:1.5%;top:1.8%;width:10%;height:5.5%">
+            <span class="shell-label">⬅ Back</span>
+          </div>
+          <div class="shell-box" style="left:13%;top:1.8%;width:30%;height:5.5%">
+            <span class="shell-label">🔍 Drillthrough: Customer Detail</span>
+          </div>
+
+          <!-- Customer Profile Card -->
+          <div class="kpi-box" style="left:1.5%;top:9%;width:97%;height:16%">
+            <div class="kpi-title">👤 Customer Profile Card</div>
+            <div class="kpi-sub">
+              <b>Fields:</b> FullName (Prefix+First+Last) | EmailAddress | Occupation | AnnualIncome | EducationLevel | MaritalStatus | HomeOwner | TotalChildren<br>
+              <b>Drillthrough Target:</b> CustomerKey
+            </div>
+            <div class="coord-label">X:30 Y:95 W:1860 H:170</div>
+          </div>
+
+          <!-- KPI row -->
+          <div class="kpi-box" style="left:1.5%;top:27%;width:23%;height:10%">
+            <div class="kpi-title">💰 Lifetime Sales</div>
+            <div class="kpi-sub">SUMX all years for this customer</div>
+          </div>
+          <div class="kpi-box" style="left:25.5%;top:27%;width:23%;height:10%">
+            <div class="kpi-title">📦 Total Orders</div>
+            <div class="kpi-sub">DISTINCTCOUNT(OrderNumber)</div>
+          </div>
+          <div class="kpi-box" style="left:49.5%;top:27%;width:23%;height:10%">
+            <div class="kpi-title">📊 Total Units</div>
+            <div class="kpi-sub">SUM(OrderQuantity)</div>
+          </div>
+          <div class="kpi-box" style="left:73.5%;top:27%;width:25%;height:10%">
+            <div class="kpi-title">📅 First / Last Order</div>
+            <div class="kpi-sub">MIN/MAX(OrderDate)</div>
+          </div>
+
+          <!-- VIS 1: Order timeline -->
+          <div class="vis-box" style="left:1.5%;top:39%;width:97%;height:28%">
+            <div class="vis-title">Order History Timeline</div>
+            <div class="vis-type">📊 Clustered Column or Table</div>
+            <div class="vis-detail">
+              <b>Rows/X-Axis:</b> OrderDate, OrderNumber<br>
+              <b>Values:</b> ProductName, OrderQuantity, Sales (Qty × Price)<br>
+              <b>Purpose:</b> See every transaction for this customer
+            </div>
+            <div class="coord-label">X:30 Y:420 W:1860 H:300</div>
+          </div>
+
+          <!-- VIS 2: Products purchased -->
+          <div class="vis-box" style="left:1.5%;top:69%;width:48%;height:28%">
+            <div class="vis-title">Products Purchased by Category</div>
+            <div class="vis-type">📊 Donut Chart</div>
+            <div class="vis-detail">
+              <b>Legend:</b> Categories[CategoryName]<br>
+              <b>Values:</b> [Sales] for this customer<br>
+              <b>Purpose:</b> Category preference of this customer
+            </div>
+            <div class="coord-label">X:30 Y:740 W:920 H:300</div>
+          </div>
+
+          <!-- VIS 3: Returns -->
+          <div class="vis-box" style="left:51%;top:69%;width:47.5%;height:28%">
+            <div class="vis-title">Return History</div>
+            <div class="vis-type">📋 Table</div>
+            <div class="vis-detail">
+              <b>Columns:</b> ReturnDate, ProductName,<br>
+              ReturnQuantity<br>
+              <b>Filter:</b> Matching ProductKeys purchased<br>
+              <b>Purpose:</b> Quality issues for this customer
+            </div>
+            <div class="coord-label">X:970 Y:740 W:920 H:300</div>
+          </div>
+        </div>
+      
+
+      <!-- DAX SPECIFICATIONS & CALCULATIONS SECTION FOR PAGE 08 -->
+      <div class="mt-4 border rounded-xl bg-slate-50 p-4 shadow-sm border-slate-300">
+        <div class="flex items-center justify-between border-b pb-3 mb-4 border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold bg-[#0F4C81] text-white">Page 08 DAX Blueprint</span>
+              <h2 class="text-base font-bold text-slate-900">Customer Detail Drillthrough</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Answering: "Deep-dive 360-degree customer profile, lifetime value, and order history."</p>
+          </div>
+          <span class="text-[11px] font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-full shadow-xs">
+            🎯 Single-Customer LTV & Purchase Audit Record
+          </span>
+        </div>
+
+        <!-- SECTION 1: CORE DAX MEASURES -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📐 Required DAX Measures & Formulas</span>
+            <span class="text-[10px] lowercase text-slate-400 font-normal">(5 measures defined)</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Customer Lifetime Sales]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">LTV</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Customer Lifetime Sales = 
+CALCULATE(
+    SUMX(Sales, Sales[OrderQuantity] * Sales[ProductPrice]),
+    REMOVEFILTERS(&#x27;Calander&#x27;)
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Calculates complete all-time historical expenditure for the selected customer, ignoring page date slicers.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Customer Lifetime Sales = 
+CALCULATE(
+    SUMX(Sales, Sales[OrderQuantity] * Sales[ProductPrice]),
+    REMOVEFILTERS(&#x27;Calander&#x27;)
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Σ (OrderQuantity × Price) over all history</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Currency ($#,##0.00)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Customer Total Orders]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Frequency</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Customer Total Orders = 
+CALCULATE(
+    DISTINCTCOUNT(Sales[OrderNumber]),
+    REMOVEFILTERS(&#x27;Calander&#x27;)
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Total number of lifetime orders placed by the customer.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Customer Total Orders = 
+CALCULATE(
+    DISTINCTCOUNT(Sales[OrderNumber]),
+    REMOVEFILTERS(&#x27;Calander&#x27;)
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">DistinctCount(OrderNumber) with REMOVEFILTERS(Calander)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Whole Number (#)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Customer Total Units]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800">Volume</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Customer Total Units = 
+CALCULATE(
+    SUM(Sales[OrderQuantity]),
+    REMOVEFILTERS(&#x27;Calander&#x27;)
+)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Total lifetime merchandise units purchased by the customer.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Customer Total Units = 
+CALCULATE(
+    SUM(Sales[OrderQuantity]),
+    REMOVEFILTERS(&#x27;Calander&#x27;)
+)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">SUM(OrderQuantity) with REMOVEFILTERS(Calander)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Whole Number (#)</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Customer First & Last Order Dates]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-800">Tenure</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Customer First Order Date = 
+CALCULATE(MIN(Sales[OrderDate]), REMOVEFILTERS(&#x27;Calander&#x27;))
+
+Customer Last Order Date = 
+CALCULATE(MAX(Sales[OrderDate]), REMOVEFILTERS(&#x27;Calander&#x27;))
+
+Customer Days Since Last Order = 
+VAR LastDate = [Customer Last Order Date]
+RETURN
+IF(NOT ISBLANK(LastDate), DATEDIFF(LastDate, TODAY(), DAY), BLANK())" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Finds customer acquisition date, most recent purchase date, and recency in days.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Customer First Order Date = 
+CALCULATE(MIN(Sales[OrderDate]), REMOVEFILTERS(&#x27;Calander&#x27;))
+
+Customer Last Order Date = 
+CALCULATE(MAX(Sales[OrderDate]), REMOVEFILTERS(&#x27;Calander&#x27;))
+
+Customer Days Since Last Order = 
+VAR LastDate = [Customer Last Order Date]
+RETURN
+IF(NOT ISBLANK(LastDate), DATEDIFF(LastDate, TODAY(), DAY), BLANK())</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Min & Max OrderDate; DateDiff(LastDate, Today, Day)</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Short Date & Days integer</code></span>
+      </div>
+    </div>
+    
+    <div class="dax-measure-card border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-xs font-bold text-slate-900">[Customer Lifetime Return Rate]</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">Risk</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText='✓ Copied'; setTimeout(() => this.innerText='Copy DAX', 1800);" 
+                data-code="Customer Lifetime Return Units = 
+CALCULATE(
+    SUM(&#x27;Returns Data&#x27;[ReturnQuantity]),
+    REMOVEFILTERS(&#x27;Calander&#x27;)
+)
+
+Customer Lifetime Return Rate = 
+DIVIDE([Customer Lifetime Return Units], [Customer Total Units], 0)" 
+                class="text-[10px] px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition border border-slate-300">
+          Copy DAX
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-600 mb-2 leading-relaxed">Identifies if this specific customer has a high return frequency across their account lifetime.</div>
+      <pre class="dax-code-block font-mono text-[10.5px] p-2.5 rounded bg-slate-900 text-emerald-400 overflow-x-auto leading-normal mb-2 border border-slate-800"><code>Customer Lifetime Return Units = 
+CALCULATE(
+    SUM(&#x27;Returns Data&#x27;[ReturnQuantity]),
+    REMOVEFILTERS(&#x27;Calander&#x27;)
+)
+
+Customer Lifetime Return Rate = 
+DIVIDE([Customer Lifetime Return Units], [Customer Total Units], 0)</code></pre>
+      <div class="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
+        <span><b>Math Logic:</b> <span class="text-slate-700">Lifetime Return Units / Lifetime Units Purchased</span></span>
+        <span><b>Format / Return:</b> <code class="text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded font-mono">Percentage (0.0%)</code></span>
+      </div>
+    </div>
+    
+          </div>
+        </div>
+
+        <!-- SECTION 2: VISUAL-TO-DATA BINDING MATRIX -->
+        <div class="mb-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
+            <span>📊 Visual-to-Data Field & Measure Bindings</span>
+          </h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-[10px] uppercase tracking-wider text-slate-600 font-bold border-b border-slate-200">
+                  <th class="p-2">Visual Name / Slot</th>
+                  <th class="p-2">Visual Type</th>
+                  <th class="p-2">Axis / Rows / Columns</th>
+                  <th class="p-2">DAX Measures Applied</th>
+                  <th class="p-2">Formatting & Filter Logic</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Customer Profile Card</td>
+          <td class="p-2 text-amber-700 font-medium">Profile Card / Multi-Row Card</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">CustomerKey Drillthrough Filter</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Fields: Customers[Name], EmailAddress, Occupation, AnnualIncome, EducationLevel, MaritalStatus, HomeOwner, TotalChildren</td>
+          <td class="p-2 text-[10px] text-slate-600">Header banner format; back button linked to previous page</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">KPI Row: Lifetime Value Strip</td>
+          <td class="p-2 text-amber-700 font-medium">New Card Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">N/A (Card Strip)</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">[Customer Lifetime Sales], [Customer Total Orders], [Customer Total Units], [Customer First Order Date], [Customer Last Order Date]</td>
+          <td class="p-2 text-[10px] text-slate-600">All-time customer metrics unaffected by external date slicers</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 1: Order History Timeline</td>
+          <td class="p-2 text-amber-700 font-medium">Table Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Sales[OrderDate] (Desc), Sales[OrderNumber]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Columns: OrderDate, OrderNumber, Products lookup[ProductName], Sales[OrderQuantity], Sales[ProductPrice], [CY Sales]</td>
+          <td class="p-2 text-[10px] text-slate-600">Chronological audit log of every order ever placed by this customer</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 2: Category Preference Donut Chart</td>
+          <td class="p-2 text-amber-700 font-medium">Donut Chart</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Legend: Products lookup[CategoryName]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Values: [Customer Lifetime Sales]</td>
+          <td class="p-2 text-[10px] text-slate-600">Visualizes customer product category preferences</td>
+        </tr>
+        
+        <tr class="hover:bg-slate-50 text-[11px] border-b border-slate-200">
+          <td class="p-2 font-semibold text-slate-800">Visual 3: Customer Return History</td>
+          <td class="p-2 text-amber-700 font-medium">Table Visual</td>
+          <td class="p-2 font-mono text-[10px] text-slate-700">Returns Data[ReturnDate]</td>
+          <td class="p-2 font-mono text-[10px] text-blue-700">Columns: ReturnDate, Products lookup[ProductName], Returns Data[ReturnQuantity]</td>
+          <td class="p-2 text-[10px] text-slate-600">Details any defective items returned by this customer</td>
+        </tr>
+        
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ARCHITECTURAL IMPROVEMENTS & DATA MODELING NOTES -->
+        <div class="rounded-lg bg-blue-50/80 border border-blue-200 p-3 text-[11px] text-blue-900">
+          <div class="font-bold text-xs flex items-center gap-1.5 text-blue-950 mb-1.5">
+            <span>💡 Recommended Improvements & Power BI Best Practices</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-slate-700">
+            <li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Drillthrough Target Configuration:</b> In Power BI Drillthrough pane, add Customers[CustomerKey] to the Drillthrough fields list and toggle 'Keep all filters' = OFF so that date slicers from overview pages do not truncate historical lifetime orders.</li><li class='mb-1.5 leading-relaxed'><b class='text-slate-800'>Customer Recency (RFM Readiness):</b> Using [Customer Days Since Last Order] and [Customer Total Orders] enables instant RFM (Recency, Frequency, Monetary) segmentation.</li>
+          </ul>
+        </div>
+      </div>
+    
+      </div>
+
+    </div><!-- /pages -->
+
+    <!-- Legend -->
+    <div class="mt-3 p-3 rounded-lg border" style="border-color:var(--border);background:var(--card)">
+      <div class="text-xs font-bold mb-1" style="color:#0F4C81">Legend</div>
+      <div class="flex flex-wrap gap-4 text-[9px]" style="color:var(--muted-foreground)">
+        <span><span style="display:inline-block;width:16px;height:10px;border:1.5px solid #0F4C81;background:rgba(15,76,129,0.07);border-radius:3px;vertical-align:middle"></span> KPI Card</span>
+        <span><span style="display:inline-block;width:16px;height:10px;border:1.5px dashed #94a3b8;background:rgba(255,255,255,0.92);border-radius:3px;vertical-align:middle"></span> Chart / Visual</span>
+        <span><span style="display:inline-block;width:16px;height:10px;border:1.5px solid #cbd5e1;background:rgba(226,232,240,0.35);border-radius:3px;vertical-align:middle"></span> Shell / Nav / Slicer</span>
+        <span style="font-family:monospace;color:#cbd5e1">X:30 Y:95</span> = Power BI pixel coordinates (1920×1080)</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showPage(idx) {
+      document.querySelectorAll('.page-content').forEach(el => {
+        el.style.display = el.dataset.page == idx ? 'block' : 'none';
+      });
+      document.querySelectorAll('.page-tab').forEach((tab, i) => {
+        tab.classList.toggle('active', i === idx);
+      });
+    }
+  </script>
+</body>
+</html>

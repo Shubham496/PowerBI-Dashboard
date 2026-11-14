@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "7ca433c7e460c0e2a69b",
+  "displayName": "Drillthrough",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920,
+  "pageBinding": {
+    "name": "CustomerDrillthroughBinding",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "CustomerKeyParameter"
+      }
+    ],
+    "acceptsFilterContext": "None"
+  },
+  "visibility": "HiddenInViewMode",
+  "type": "Drillthrough"
+}

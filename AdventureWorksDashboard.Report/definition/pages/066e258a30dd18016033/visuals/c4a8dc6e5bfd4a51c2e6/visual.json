@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "c4a8dc6e5bfd4a51c2e6",
+  "position": {
+    "x": 30,
+    "y": 95,
+    "z": 5,
+    "height": 130,
+    "width": 1860,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Active Territories Count"
+                }
+              },
+              "queryRef": "zero.Active Territories Count",
+              "nativeQueryRef": "Active Territories Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Top Country by Sales"
+                }
+              },
+              "queryRef": "zero.Top Country by Sales",
+              "nativeQueryRef": "Top Country by Sales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Top Country by Gross Margin"
+                }
+              },
+              "queryRef": "zero.Top Country by Gross Margin",
+              "nativeQueryRef": "Top Country by Gross Margin"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "Top Country by Return Rate"
+                }
+              },
+              "queryRef": "zero.Top Country by Return Rate",
+              "nativeQueryRef": "Top Country by Return Rate"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

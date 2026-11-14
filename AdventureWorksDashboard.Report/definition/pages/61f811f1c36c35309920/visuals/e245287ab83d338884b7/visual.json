@@ -1,0 +1,104 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "e245287ab83d338884b7",
+  "position": {
+    "x": 1200,
+    "y": 705.23076923076928,
+    "z": 9,
+    "height": 345.23076923076928,
+    "width": 690
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Calander"
+                    }
+                  },
+                  "Property": "Short Month"
+                }
+              },
+              "queryRef": "Calander.Short Month",
+              "nativeQueryRef": "Short Month"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "CY Gross Profit"
+                }
+              },
+              "queryRef": "zero.CY Gross Profit",
+              "nativeQueryRef": "CY Gross Profit"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "zero"
+                    }
+                  },
+                  "Property": "CY Total Cost"
+                }
+              },
+              "queryRef": "zero.CY Total Cost",
+              "nativeQueryRef": "CY Total Cost"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Calander"
+                  }
+                },
+                "Property": "Short Month"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Monthly Profit & Cost Breakdown'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

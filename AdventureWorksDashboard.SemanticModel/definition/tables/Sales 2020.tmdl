@@ -1,0 +1,132 @@
+table 'Sales 2020'
+	isHidden
+	lineageTag: f9805706-fab3-43d5-adc9-8d15f12ec5a3
+
+	column OrderDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: d13347d1-f0e6-4e27-9529-aa2e30e911fa
+		summarizeBy: none
+		sourceColumn: OrderDate
+
+		variation Variation
+			isDefault
+			relationship: 4841c823-3d1b-4448-8fea-577f06ef523d
+			defaultHierarchy: LocalDateTable_23ed5bc3-3ba1-466b-a7f4-8fa2cd4ec302.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column StockDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: c2f208bd-9815-4eab-a189-8f2490b706d0
+		summarizeBy: none
+		sourceColumn: StockDate
+
+		variation Variation
+			isDefault
+			relationship: 4f68ca51-c11e-4170-be10-778b9078e844
+			defaultHierarchy: LocalDateTable_98807b28-0a2b-4b63-b09b-6b47924bad11.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OrderNumber
+		dataType: string
+		isHidden
+		lineageTag: a2854dea-bbfe-43a0-a5ab-58e3d063b6a7
+		summarizeBy: none
+		sourceColumn: OrderNumber
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e94d1fc5-cdc3-4380-a7d4-ffc3ffc16ec0
+		summarizeBy: count
+		sourceColumn: ProductKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 838cfb67-83cc-45ee-a0fc-9204233f6e0a
+		summarizeBy: count
+		sourceColumn: CustomerKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TerritoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 60d85f2f-f40c-40a5-bbb9-65d1cfca0acc
+		summarizeBy: count
+		sourceColumn: TerritoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderLineItem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ae2e5083-7e37-4989-866d-f739bac53424
+		summarizeBy: sum
+		sourceColumn: OrderLineItem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderQuantity
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cee25591-56a0-4f29-8d03-8f575166d8f1
+		summarizeBy: sum
+		sourceColumn: OrderQuantity
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Sales 2020' = m
+		mode: import
+		queryGroup: YearlySales
+		source =
+				let
+				    Source = Folder.Files(folderAddress),
+				    #"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Sales Data 2020 csv" = Source{[#"Folder Path"=folderAddress,Name="AdventureWorks Sales Data 2020.csv"]}[Content],
+				    #"Imported CSV" = Csv.Document(#"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Sales Data 2020 csv",[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"OrderDate", type date}, {"StockDate", type date}, {"OrderNumber", type text}, {"ProductKey", Int64.Type}, {"CustomerKey", Int64.Type}, {"TerritoryKey", Int64.Type}, {"OrderLineItem", Int64.Type}, {"OrderQuantity", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

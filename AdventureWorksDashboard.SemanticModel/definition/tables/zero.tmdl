@@ -1,0 +1,625 @@
+table zero
+	lineageTag: ce7bf989-e99b-46c0-8192-92aa31540171
+
+	measure 'CY Sales' = SUM(Sales[Sales])
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Sales
+		lineageTag: 6dfedb99-a1c4-42b7-9566-63735ef60a80
+
+	measure 'PY Sales' = CALCULATE([CY Sales], SAMEPERIODLASTYEAR(Calander[Date]))
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Sales
+		lineageTag: acf695a6-763a-44cb-9c11-a7a406c7b55e
+
+	measure 'Sales Delta' = [CY Sales] - [PY Sales]
+		formatString: +\$#,##0;-\$#,##0;\$0
+		displayFolder: Sales
+		lineageTag: d5cedf92-4875-4613-b7ad-59042ef4486b
+
+	measure 'Sales Growth' = DIVIDE([Sales Delta], [PY Sales], 0)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Sales
+		lineageTag: 1737a005-9ef2-4bd5-9741-8813d6ae6e45
+
+	measure 'Sales Formatted' =
+			VAR Amount = [CY Sales]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(Amount), "$0.00",
+			    ABS(Amount) >= 1000000, "$" & FORMAT(Amount / 1000000, "0.00") & "M",
+			    ABS(Amount) >= 1000, "$" & FORMAT(Amount / 1000, "0.0") & "K",
+			    "$" & FORMAT(Amount, "#,##0.00")
+			)
+		displayFolder: Sales
+		lineageTag: c5b6e3d2-2d5c-4380-85ee-2e3e5304a1ca
+
+	measure 'PY Sales Formatted' =
+			VAR Amount = [PY Sales]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(Amount), "$0.00",
+			    ABS(Amount) >= 1000000, "$" & FORMAT(Amount / 1000000, "0.00") & "M",
+			    ABS(Amount) >= 1000, "$" & FORMAT(Amount / 1000, "0.0") & "K",
+			    "$" & FORMAT(Amount, "#,##0.00")
+			)
+		displayFolder: Sales
+		lineageTag: d8af3ce0-7645-44d6-bcb5-9e869ef4cfbd
+
+	measure 'Sales Growth Formatted' =
+			VAR GrowthVal = [Sales Growth]
+			VAR DeltaVal = [Sales Delta]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK([PY Sales]), "New",
+			    DeltaVal > 0, "▲ +" & FORMAT(GrowthVal, "0.0%"),
+			    DeltaVal < 0, "▼ " & FORMAT(GrowthVal, "0.0%"),
+			    "― 0.0%"
+			)
+		displayFolder: Sales
+		lineageTag: 65f38eb4-126e-4e1a-8f24-44e8c6c1d85e
+
+	measure 'CY Quantity Ordered' = SUM(Sales[OrderQuantity])
+		formatString: #,##0
+		displayFolder: Quantity & Returns
+		lineageTag: 319aa161-30eb-41d8-8920-d0ac382df474
+
+	measure 'PY Quantity Ordered' = CALCULATE(SUM(Sales[OrderQuantity]), SAMEPERIODLASTYEAR(Calander[Date]))
+		formatString: #,##0
+		displayFolder: Quantity & Returns
+		lineageTag: d203295a-52c8-4116-a4b2-2a8b00cb70d2
+
+	measure 'Quantity Ordered Formatted' =
+			VAR Qty = [CY Quantity Ordered]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(Qty), "0",
+			    ABS(Qty) >= 1000000, FORMAT(Qty / 1000000, "0.00") & "M",
+			    ABS(Qty) >= 1000, FORMAT(Qty / 1000, "0.0") & "K",
+			    FORMAT(Qty, "#,##0")
+			)
+		displayFolder: Quantity & Returns
+		lineageTag: 5da621dd-0e51-4d2e-90ce-2a8fe3ba657d
+
+	measure 'PY Quantity Ordered Formatted' =
+			VAR Qty = [PY Quantity Ordered]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(Qty), "0",
+			    ABS(Qty) >= 1000000, FORMAT(Qty / 1000000, "0.00") & "M",
+			    ABS(Qty) >= 1000, FORMAT(Qty / 1000, "0.0") & "K",
+			    FORMAT(Qty, "#,##0")
+			)
+		displayFolder: Quantity & Returns
+		lineageTag: 880d3020-6c0f-42a1-b87e-026682774829
+
+	measure 'Quantity Delta' = [CY Quantity Ordered] - [PY Quantity Ordered]
+		formatString: +#,##0;-#,##0;0
+		displayFolder: Quantity & Returns
+		lineageTag: 8191b189-1036-4996-a144-c5189eb681d5
+
+	measure 'Quantity Delta Formatted' =
+			VAR Qty = [Quantity Delta]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(Qty), "0",
+			    ABS(Qty) >= 1000000, FORMAT(Qty / 1000000, "0.00") & "M",
+			    ABS(Qty) >= 1000, FORMAT(Qty / 1000, "0.0") & "K",
+			    FORMAT(Qty, "+#,##0;-#,##0;0")
+			)
+		displayFolder: Quantity & Returns
+		lineageTag: 891ea782-44eb-4785-8054-2c3b2d81932f
+
+	measure 'Quantity Growth' = DIVIDE([Quantity Delta], [PY Quantity Ordered], 0)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Quantity & Returns
+		lineageTag: bc264b6b-441c-42c4-94f7-2c9792e91811
+
+	measure 'Quantity Growth Formatted' =
+			VAR GrowthValue = [Quantity Growth]
+			VAR DeltaValue = [Quantity Delta]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK([PY Quantity Ordered]), "New",
+			    DeltaValue > 0, "▲ +" & FORMAT(GrowthValue, "0.0%"),
+			    DeltaValue < 0, "▼ " & FORMAT(GrowthValue, "0.0%"),
+			    "― 0.0%"
+			)
+		displayFolder: Quantity & Returns
+		lineageTag: cbaf9d8c-02cf-4bc1-9017-cb38ba2bf135
+
+	measure 'Delta Formatted' =
+			VAR DeltaVal = [Sales Delta]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(DeltaVal), "$0.00",
+			    ABS(DeltaVal) >= 1000000, "$" & FORMAT(DeltaVal / 1000000, "0.00") & "M",
+			    ABS(DeltaVal) >= 1000, "$" & FORMAT(DeltaVal / 1000, "0.0") & "K",
+			    "$" & FORMAT(DeltaVal, "#,##0.00")
+			)
+		displayFolder: Sales
+		lineageTag: d8c5be8d-7c27-4a00-b6f7-b19dafe34c56
+
+	measure 'CY Total Cost' = SUMX(Sales, Sales[OrderQuantity] * RELATED('Products lookup'[ProductCost]))
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Profit & Margin
+		lineageTag: c463a502-d96a-4b92-807e-128f7fcb5757
+
+	measure 'CY Gross Profit' = [CY Sales] - [CY Total Cost]
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Profit & Margin
+		lineageTag: 4713a545-f37e-43ec-9d76-084e2dd15030
+
+	measure 'CY Gross Margin' = DIVIDE([CY Gross Profit], [CY Sales], 0)
+		formatString: 0.0%
+		displayFolder: Profit & Margin
+		lineageTag: 544aeff4-d4ca-45ec-8f7e-c55a6a3eddb8
+
+	measure 'CY Customers' = DISTINCTCOUNT(Sales[CustomerKey])
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: 868137cf-0eb0-4220-955c-8090c0653b6f
+
+	measure 'PY Customers' = CALCULATE([CY Customers], SAMEPERIODLASTYEAR(Calander[Date]))
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: 91980b2a-cbf7-4d77-8385-5ebfab311030
+
+	measure 'Customer Growth' = DIVIDE([CY Customers] - [PY Customers], [PY Customers], 0)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Customers
+		lineageTag: 39843421-c53d-48af-a3a2-c57642efd6b0
+
+	measure 'CY Repeat Customers' = ```
+			COUNTROWS(
+			    FILTER(
+			        VALUES(Sales[CustomerKey]), 
+			        [CY Orders] > 1
+			    )
+			)
+			```
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: 4809ffa7-b35e-4338-8c99-67334851045c
+
+	measure 'CY Repeat Rate' = DIVIDE([CY Repeat Customers], [CY Customers], 0)
+		formatString: 0.0%
+		displayFolder: Customers
+		lineageTag: 2478dfc4-dd13-4409-9c34-ee0b5c8022cb
+
+	measure 'CY Return Quantity' =
+			CALCULATE(
+			    SUM('Returns Data'[ReturnQuantity]),
+			    USERELATIONSHIP('Returns Data'[ReturnDate], Calander[Date])
+			)
+		formatString: #,##0
+		displayFolder: Quantity & Returns
+		lineageTag: d1085dd8-cfa3-4292-9685-164608728f6e
+
+	measure 'Gross Profit Growth' = DIVIDE([CY Gross Profit] - [PY Gross Profit], [PY Gross Profit], 0)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Profit & Margin
+		lineageTag: b5d51fb0-95ec-47c9-8025-b33b9eafce27
+
+	measure 'PY Total Cost' =
+			CALCULATE(
+			    SUMX(Sales, Sales[OrderQuantity] * RELATED('Products lookup'[ProductCost])),
+			    SAMEPERIODLASTYEAR(Calander[Date])
+			)
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Profit & Margin
+		lineageTag: e3bbd73e-9802-4a03-a672-7a0049f0845c
+
+	measure 'PY Gross Profit' = [PY Sales] - [PY Total Cost]
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Profit & Margin
+		lineageTag: 949fea29-4331-4d44-a72f-5dc93fe2d0d9
+
+	measure 'Gross Profit Growth Formatted' =
+			VAR GrowthVal = [Gross Profit Growth]
+			VAR DeltaVal = [CY Gross Profit] - [PY Gross Profit]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK([PY Gross Profit]), "New",
+			    DeltaVal > 0, "▲ +" & FORMAT(GrowthVal, "0.0%"),
+			    DeltaVal < 0, "▼ " & FORMAT(GrowthVal, "0.0%"),
+			    "― 0.0%"
+			)
+		displayFolder: Profit & Margin
+		lineageTag: 80eddad3-3152-4890-aabb-40c33722658c
+
+	measure 'CY Gross Profit Formatted' =
+			VAR Amount = [CY Gross Profit]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(Amount), "$0.00",
+			    ABS(Amount) >= 1000000, "$" & FORMAT(Amount / 1000000, "0.00") & "M",
+			    ABS(Amount) >= 1000, "$" & FORMAT(Amount / 1000, "0.0") & "K",
+			    "$" & FORMAT(Amount, "#,##0.00")
+			)
+		displayFolder: Profit & Margin
+		lineageTag: ca1f600e-e4f9-4bd1-ae9b-9a53f4e8f97a
+
+	measure 'Customer Growth Formatted' =
+			VAR GrowthVal = [Customer Growth]
+			VAR DeltaVal = [CY Customers] - [PY Customers]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK([PY Customers]), "New",
+			    DeltaVal > 0, "▲ +" & FORMAT(GrowthVal, "0.0%"),
+			    DeltaVal < 0, "▼ " & FORMAT(GrowthVal, "0.0%"),
+			    "― 0.0%"
+			)
+		displayFolder: Customers
+		lineageTag: ea3f8623-5d46-417a-9313-5d6611130061
+
+	measure f_max_hight_sales =
+			MAXX(
+			    VALUES(Calander[Month Name]),
+			    CALCULATE(SUM('Sales'[Sales]))
+			) * 1.2
+		displayFolder: Other
+		lineageTag: 11534482-1731-4496-87b1-e6a0cd04dc28
+
+	measure 'Return Rate' = DIVIDE([CY Return Quantity], [CY Quantity Ordered], 0)
+		formatString: 0.00%
+		displayFolder: Quantity & Returns
+		lineageTag: 766d22a4-5f3c-4c6c-9e33-b6f84e97a179
+
+	measure 'PY Gross Margin' = CALCULATE([CY Gross Margin], SAMEPERIODLASTYEAR(Calander[Date]))
+		formatString: 0.0%
+		displayFolder: Profit & Margin
+		lineageTag: 2478a011-881c-4b15-9922-38501ab14fa1
+
+	measure 'Delta Gross Margin' =
+			VAR CYMargin = [CY Gross Margin]
+			VAR PYMargin = [PY Gross Margin]
+			RETURN
+			IF(ISBLANK(PYMargin), BLANK(), CYMargin - PYMargin)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Profit & Margin
+		lineageTag: b3381a44-2451-4fa2-bcde-9742a775cdb2
+
+	measure 'Gross Margin Delta' = [Delta Gross Margin]
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Profit & Margin
+		lineageTag: a7234be1-9128-4efc-83b4-ec86111a91cf
+
+	measure 'Gross Margin Delta Formatted' =
+			VAR DeltaVal = [Delta Gross Margin]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK([PY Gross Margin]), "New",
+			    DeltaVal > 0, "▲ +" & FORMAT(DeltaVal, "0.0%"),
+			    DeltaVal < 0, "▼ " & FORMAT(DeltaVal, "0.0%"),
+			    "― 0.0%"
+			)
+		displayFolder: Profit & Margin
+		lineageTag: 671239ab-d218-4509-9150-13bafef61d88
+
+	measure 'CY Orders' = DISTINCTCOUNT(Sales[OrderNumber])
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: 18b76ce2-6512-4cf4-9271-e94511ca33f0
+
+	measure 'PY Orders' = CALCULATE([CY Orders], SAMEPERIODLASTYEAR(Calander[Date]))
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: 729bfa55-1b42-45e4-8d99-52f1e29ad981
+
+	measure 'Orders Growth' = DIVIDE([CY Orders] - [PY Orders], [PY Orders], 0)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Customers
+		lineageTag: 8816cb44-33ca-492e-9d22-ea820dbca814
+
+	measure 'CY Orders per Customer' = DIVIDE([CY Orders], [CY Customers], 0)
+		formatString: 0.0
+		displayFolder: Customers
+		lineageTag: 93ca5611-ef77-4b68-b809-5d933ca9bf22
+
+	measure 'CY Quantity' = [CY Quantity Ordered]
+		formatString: #,##0
+		displayFolder: Quantity & Returns
+		lineageTag: 61ef55ba-41ea-4ea2-80ea-75a76981cfb5
+
+	measure 'Return Rate Formatted' =
+			VAR Rate = [Return Rate]
+			RETURN
+			IF(ISBLANK(Rate), "0.00%", FORMAT(Rate, "0.00%"))
+		displayFolder: Quantity & Returns
+		lineageTag: 48962c33-c11f-4ea3-8fb5-2a2b0051e899
+
+	measure 'CY Sales per Customer' = DIVIDE([CY Sales], [CY Customers], 0)
+		formatString: \$#,##0.00;(\$#,##0.00);\$0.00
+		displayFolder: Customers
+		lineageTag: e69ff228-bc06-4448-b4b4-82559779dfaa
+
+	measure 'PY Sales per Customer' = CALCULATE([CY Sales per Customer], SAMEPERIODLASTYEAR(Calander[Date]))
+		formatString: \$#,##0.00;(\$#,##0.00);\$0.00
+		displayFolder: Customers
+		lineageTag: a76974fb-16d1-4dbd-8158-b673df64ec28
+
+	measure 'Sales per Customer Growth' = DIVIDE([CY Sales per Customer] - [PY Sales per Customer], [PY Sales per Customer], 0)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Customers
+		lineageTag: a8b36d0a-9cb8-4b7d-81c4-118ff56cf9f5
+
+	measure 'Sales per Customer Growth Formatted' =
+			VAR GrowthVal = [Sales per Customer Growth]
+			VAR DeltaVal = [CY Sales per Customer] - [PY Sales per Customer]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK([PY Sales per Customer]), "New",
+			    DeltaVal > 0, "▲ +" & FORMAT(GrowthVal, "0.0%"),
+			    DeltaVal < 0, "▼ " & FORMAT(GrowthVal, "0.0%"),
+			    "― 0.0%"
+			)
+		displayFolder: Customers
+		lineageTag: fb4d7d3b-93ca-497d-aa58-3f56e0d3c01c
+
+	measure 'CY Gross Cost' = [CY Total Cost]
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Profit & Margin
+		lineageTag: aecf1847-bc97-4221-a53b-e47fe8fbe6b1
+
+	measure 'Gross Margin Color' =
+			VAR MarginVal = [CY Gross Margin]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    MarginVal >= 0.45, "#10B981",
+			    MarginVal >= 0.35, "#3B82F6",
+			    MarginVal >= 0.25, "#F59E0B",
+			    "#EF4444"
+			)
+		displayFolder: Profit & Margin
+		lineageTag: f856bce4-67aa-4fba-bbcf-09f18a280e22
+
+	measure 'CY One-Time Customers' = [CY Customers] - [CY Repeat Customers]
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: 24cf8f23-8c44-4903-8219-c70eaefd1001
+
+	measure 'CY One-Time Rate' = DIVIDE([CY One-Time Customers], [CY Customers], 0)
+		formatString: 0.0%
+		displayFolder: Customers
+		lineageTag: 18db2f4a-9391-455b-80df-81237d8e2002
+
+	measure 'CY New Customers' = ```
+			VAR CustomersInPeriod = VALUES(Sales[CustomerKey])
+			VAR MinSelectedDate = MIN('Calander'[Date])
+			VAR MaxSelectedDate = MAX('Calander'[Date])
+			RETURN
+			COUNTROWS(
+			    FILTER(
+			        CustomersInPeriod,
+			        VAR FirstEverDate = 
+			            CALCULATE(
+			                MIN(Sales[OrderDate]), 
+			                REMOVEFILTERS('Calander')
+			            )
+			        RETURN
+			            FirstEverDate >= MinSelectedDate && FirstEverDate <= MaxSelectedDate
+			    )
+			)
+			```
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: d928bc31-e123-4567-89ab-cdef01234567
+
+	measure 'CY Lost Customers' = ```
+			VAR CurrentCustomers = VALUES(Sales[CustomerKey])
+			VAR PriorYearCustomers = 
+			    CALCULATETABLE(
+			        VALUES(Sales[CustomerKey]),
+			        SAMEPERIODLASTYEAR('Calander'[Date])
+			    )
+			RETURN
+			COUNTROWS(
+			    EXCEPT(PriorYearCustomers, CurrentCustomers)
+			)
+			```
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: 5b6c7d8e-9fa0-1b2c-3d4e-5f6a7b8c9d0e
+
+	measure 'Customer Retention Rate' = ```
+			VAR PriorYearCustomers = 
+			    CALCULATETABLE(
+			        VALUES(Sales[CustomerKey]),
+			        SAMEPERIODLASTYEAR('Calander'[Date])
+			    )
+			VAR RetainedCustomers = 
+			    CALCULATETABLE(
+			        VALUES(Sales[CustomerKey]),
+			        PriorYearCustomers
+			    )
+			RETURN
+			DIVIDE(COUNTROWS(RetainedCustomers), COUNTROWS(PriorYearCustomers), 0)
+			```
+		formatString: 0.0%
+		displayFolder: Customers
+		lineageTag: 7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d
+
+	measure 'Product Sales Rank' =
+			RANKX(
+			    ALLSELECTED('Products lookup'[ProductName]),
+			    [CY Sales],
+			    ,
+			    DESC,
+			    Dense
+			)
+		formatString: 0
+		displayFolder: Products
+		lineageTag: 8e5f2b31-35ce-49b0-9a25-c632e88a09b1
+
+	measure 'Top 10 Product Sales' = IF([Product Sales Rank] <= 10, [CY Sales], BLANK())
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Products
+		lineageTag: d2385a41-6154-4f4c-8197-0952d763a152
+
+	measure 'Top 10 PY Sales' = IF([Product Sales Rank] <= 10, [PY Sales], BLANK())
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Products
+		lineageTag: 52a129ef-3b17-48f5-a129-9e8c460812bd
+
+	measure 'Avg Selling Price' = DIVIDE([CY Sales], [CY Quantity], 0)
+		formatString: \$#,##0.00;(\$#,##0.00);\$0.00
+		displayFolder: Products
+		lineageTag: bb0e7d5a-192a-4648-b4ca-2e35a12093ea
+
+	measure 'Avg Product Cost' = DIVIDE([CY Total Cost], [CY Quantity], 0)
+		formatString: \$#,##0.00;(\$#,##0.00);\$0.00
+		displayFolder: Products
+		lineageTag: c9419b02-6b31-4197-8fa2-632b72019481
+
+	measure 'Unit Margin' = [Avg Selling Price] - [Avg Product Cost]
+		formatString: \$#,##0.00;(\$#,##0.00);\$0.00
+		displayFolder: Products
+		lineageTag: f4619ba0-7462-43bb-a5f1-32904c6ba481
+
+	measure 'Return Rate Status Color' =
+			SWITCH(
+			    TRUE(),
+			    [Return Rate] > 0.03, "#EF4444",
+			    [Return Rate] > 0.02, "#F59E0B",
+			    "#10B981"
+			)
+		displayFolder: Products
+		lineageTag: e839a99f-bb2b-47e2-8b41-110041285cb4
+
+	measure 'Active Territories Count' = DISTINCTCOUNT(Sales[TerritoryKey])
+		formatString: #,##0
+		displayFolder: Geography
+		lineageTag: c6b7a8d9-1e2f-4a3b-8c5d-9e0f1a2b3c4d
+
+	measure 'Top Country by Sales' = CONCATENATEX(TOPN(1, VALUES(Territory[Country]), [CY Sales], DESC), Territory[Country], ", ")
+		displayFolder: Geography
+		lineageTag: d7c8b9a0-2f3a-4b5c-9d6e-0f1a2b3c4d5e
+
+	measure 'Top Country by Gross Margin' = CONCATENATEX(TOPN(1, VALUES(Territory[Country]), [CY Gross Margin], DESC), Territory[Country], ", ")
+		displayFolder: Geography
+		lineageTag: e8d9c0a1-3a4b-5c6d-0e7f-1a2b3c4d5e6f
+
+	measure 'Top Country by Return Rate' = CONCATENATEX(TOPN(1, VALUES(Territory[Country]), [Return Rate], DESC), Territory[Country], ", ")
+		displayFolder: Geography
+		lineageTag: f9e0d1b2-4b5c-6d7e-1f8a-2b3c4d5e6f7a
+
+	measure 'Territory Revenue Share' = DIVIDE([CY Sales], CALCULATE([CY Sales], ALLSELECTED(Territory)), 0)
+		formatString: 0.0%
+		displayFolder: Geography
+		lineageTag: a0f1e2c3-5c6d-7e8f-2a9b-3c4d5e6f7a8b
+
+	measure 'PY Return Quantity' = CALCULATE([CY Return Quantity], SAMEPERIODLASTYEAR('Calander'[Date]))
+		formatString: #,##0
+		displayFolder: Quantity & Returns
+		lineageTag: a1b2c3d4-1111-4000-8000-000000000001
+
+	measure 'Return Growth' = DIVIDE([CY Return Quantity] - [PY Return Quantity], [PY Return Quantity], 0)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Quantity & Returns
+		lineageTag: a1b2c3d4-1111-4000-8000-000000000002
+
+	measure 'Return Growth Formatted' =
+			VAR GrowthVal = [Return Growth]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK([PY Return Quantity]), "New",
+			    GrowthVal > 0, "▲ +" & FORMAT(GrowthVal, "0.0%"),
+			    GrowthVal < 0, "▼ " & FORMAT(GrowthVal, "0.0%"),
+			    "— 0.0%"
+			)
+		displayFolder: Quantity & Returns
+		lineageTag: a1b2c3d4-1111-4000-8000-000000000003
+
+	measure 'CY Est Return Cost' = CALCULATE(SUMX('Returns Data', 'Returns Data'[ReturnQuantity] * RELATED('Products lookup'[ProductCost])), USERELATIONSHIP('Returns Data'[ReturnDate], 'Calander'[Date]))
+		formatString: \$#,##0;(\$#,##0);\$0
+		displayFolder: Quantity & Returns
+		lineageTag: a1b2c3d4-1111-4000-8000-000000000004
+
+	measure 'Total Return Rate Benchmark' = CALCULATE([Return Rate], ALLSELECTED('Products lookup'))
+		formatString: 0.00%
+		displayFolder: Quantity & Returns
+		lineageTag: a1b2c3d4-1111-4000-8000-000000000005
+
+	measure 'Is High Risk Return Product' = IF([CY Return Quantity] > 10 && [Return Rate] > 0.02, 1, 0)
+		formatString: 0
+		displayFolder: Quantity & Returns
+		lineageTag: a1b2c3d4-1111-4000-8000-000000000006
+
+	measure 'Customer Lifetime Sales' = CALCULATE(SUMX(Sales, Sales[OrderQuantity] * Sales[ProductPrice]), REMOVEFILTERS('Calander'))
+		formatString: \$#,##0.00;(\$#,##0.00);\$0.00
+		displayFolder: Customers
+		lineageTag: b2c3d4e5-2222-4000-8000-000000000001
+
+	measure 'Customer Total Orders' = CALCULATE(DISTINCTCOUNT(Sales[OrderNumber]), REMOVEFILTERS('Calander'))
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: b2c3d4e5-2222-4000-8000-000000000002
+
+	measure 'Customer Total Units' = CALCULATE(SUM(Sales[OrderQuantity]), REMOVEFILTERS('Calander'))
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: b2c3d4e5-2222-4000-8000-000000000003
+
+	measure 'Customer First Order Date' = CALCULATE(MIN(Sales[OrderDate]), REMOVEFILTERS('Calander'))
+		formatString: yyyy-mm-dd
+		displayFolder: Customers
+		lineageTag: b2c3d4e5-2222-4000-8000-000000000004
+
+	measure 'Customer Last Order Date' = CALCULATE(MAX(Sales[OrderDate]), REMOVEFILTERS('Calander'))
+		formatString: yyyy-mm-dd
+		displayFolder: Customers
+		lineageTag: b2c3d4e5-2222-4000-8000-000000000005
+
+	measure 'Customer Days Since Last Order' =
+			VAR LastDate = [Customer Last Order Date]
+			RETURN
+			IF(NOT ISBLANK(LastDate), DATEDIFF(LastDate, TODAY(), DAY), BLANK())
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: b2c3d4e5-2222-4000-8000-000000000006
+
+	measure 'Customer Lifetime Return Units' = CALCULATE(SUM('Returns Data'[ReturnQuantity]), REMOVEFILTERS('Calander'))
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: b2c3d4e5-2222-4000-8000-000000000007
+
+	measure 'Customer Lifetime Return Rate' = DIVIDE([Customer Lifetime Return Units], [Customer Total Units], 0)
+		formatString: 0.00%
+		displayFolder: Customers
+		lineageTag: b2c3d4e5-2222-4000-8000-000000000008
+
+	column zero
+		dataType: string
+		lineageTag: 991af3b2-5c2d-4a39-a0ea-238d6aad68ff
+		summarizeBy: none
+		sourceColumn: zero
+
+		annotation SummarizationSetBy = Automatic
+
+	partition zero = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "zero"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_ResultType = Table
+

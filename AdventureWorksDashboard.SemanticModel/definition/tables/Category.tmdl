@@ -1,0 +1,46 @@
+table Category
+	isHidden
+	lineageTag: 8ad74ef0-b1f9-4f6e-9ac2-74a8dce49b92
+
+	column ProductCategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 865d8181-9341-4c77-98e2-eeed3755a045
+		summarizeBy: count
+		sourceColumn: ProductCategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryName
+		dataType: string
+		isHidden
+		lineageTag: 2c02aa16-6b6d-43fa-9a8f-50e9b94200c5
+		summarizeBy: none
+		sourceColumn: CategoryName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Category = m
+		mode: import
+		queryGroup: baseProductGroup
+		source =
+				let
+				    Source = Folder.Files(folderAddress),
+				    #"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Product Categories Lookup csv" = Source{[#"Folder Path"=folderAddress,Name="AdventureWorks Product Categories Lookup.csv"]}[Content],
+				    #"Imported CSV" = Csv.Document(#"F:\Projects\PowerBi\ducat\Adventure works\Data\_AdventureWorks Product Categories Lookup csv",[Delimiter=",", Columns=2, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ProductCategoryKey", Int64.Type}, {"CategoryName", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

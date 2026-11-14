@@ -1,0 +1,181 @@
+table 'Products lookup'
+	lineageTag: d3d1993a-d6a8-40cb-83ab-5a438c54b81f
+
+	column ProductKey
+		dataType: int64
+		formatString: 0
+		lineageTag: b20dd94c-bf15-4097-ab41-2040de99b353
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductSubcategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 43203e78-5581-41be-be1c-44265f03b72c
+		summarizeBy: count
+		sourceColumn: ProductSubcategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductSKU
+		dataType: string
+		lineageTag: a7c1bed5-6c83-43fc-b84a-06c51e151d4a
+		summarizeBy: none
+		sourceColumn: ProductSKU
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductName
+		dataType: string
+		isHidden
+		lineageTag: d46fb60e-b8c6-4453-ab25-0a860769ab36
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModelName
+		dataType: string
+		lineageTag: f818a455-3f07-494a-b816-618e753ad5e7
+		summarizeBy: none
+		sourceColumn: ModelName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductDescription
+		dataType: string
+		lineageTag: 3c415b7f-9686-4bd4-9224-d09c354ce935
+		summarizeBy: none
+		sourceColumn: ProductDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductColor
+		dataType: string
+		lineageTag: 69a850f0-a0a9-4ab2-984a-644a896282fe
+		summarizeBy: none
+		sourceColumn: ProductColor
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductSize
+		dataType: string
+		lineageTag: e519ec9c-bd67-49f5-9e11-31a197d21ee7
+		summarizeBy: none
+		sourceColumn: ProductSize
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductStyle
+		dataType: string
+		lineageTag: c3243b2b-bc76-4128-926a-581210ffcff7
+		summarizeBy: none
+		sourceColumn: ProductStyle
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCost
+		dataType: double
+		lineageTag: 9256ca25-c72e-4804-8a0c-d144d72bc75b
+		summarizeBy: sum
+		sourceColumn: ProductCost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ProductPrice
+		dataType: double
+		lineageTag: 382cb3cd-162f-4f44-aec7-466263ac0021
+		summarizeBy: sum
+		sourceColumn: ProductPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column SubcategoryName
+		dataType: string
+		isHidden
+		lineageTag: b0eed099-55f5-404c-a7c3-a9e66ebc8862
+		summarizeBy: none
+		sourceColumn: SubcategoryName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f111acf5-183e-49ee-af60-a0ece8e3f252
+		summarizeBy: count
+		sourceColumn: ProductCategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryName
+		dataType: string
+		isHidden
+		lineageTag: 7c7b50c5-9f97-41f9-9c74-e3c0d3f1eb8f
+		summarizeBy: none
+		sourceColumn: CategoryName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductMargin = 'Products lookup'[ProductPrice] - 'Products lookup'[ProductCost]
+		lineageTag: a8cbfdac-1da1-4e6b-8443-67f35a36c72b
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	hierarchy 'CategoryName Hierarchy'
+		lineageTag: dc2925b2-b85a-4456-b9d2-fbf168f908c7
+
+		level CategoryName
+			lineageTag: cf6ff941-f265-4b8d-847d-075e141e8afc
+			column: CategoryName
+
+		level SubcategoryName
+			lineageTag: 6a5f9f5c-1017-40b9-936b-5b8fb7cb2fc2
+			column: SubcategoryName
+
+		level ProductName
+			lineageTag: be514179-de8d-4c92-a632-02aca2103ddc
+			column: ProductName
+
+		level ProductSKU
+			lineageTag: c3243b2b-8e12-4f67-a234-924bcf8813a0
+			column: ProductSKU
+
+	partition 'Products lookup' = m
+		mode: import
+		source =
+				let
+				    Source = Table.NestedJoin(Products, {"ProductSubcategoryKey"}, subcategory, {"ProductSubcategoryKey"}, "subcategory", JoinKind.Inner),
+				    #"Expanded subcategory" = Table.ExpandTableColumn(Source, "subcategory", {"SubcategoryName", "ProductCategoryKey"}, {"SubcategoryName", "ProductCategoryKey"}),
+				    #"Merged Queries" = Table.NestedJoin(#"Expanded subcategory", {"ProductCategoryKey"}, Category, {"ProductCategoryKey"}, "Category", JoinKind.LeftOuter),
+				    #"Expanded Category" = Table.ExpandTableColumn(#"Merged Queries", "Category", {"CategoryName"}, {"CategoryName"})
+				in
+				    #"Expanded Category"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,7 @@
+expression folderAddress = "F:\Projects\PowerBi\ducat\Adventure works\Data\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 726b4cbb-02bd-4fa0-a17c-72bdffc86a4d
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+

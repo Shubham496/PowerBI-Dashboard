@@ -1,0 +1,235 @@
+table _
+	isHidden
+	lineageTag: 953c290f-6bf7-4572-ba1d-96079fd37a63
+
+	column Date
+		isHidden
+		formatString: General Date
+		lineageTag: 95d0d538-21ff-4a33-977f-c31fbd7600a0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		variation Variation
+			isDefault
+			relationship: 915a776d-212d-4da7-9d15-b32b444033f6
+			defaultHierarchy: LocalDateTable_bd46df98-7cd3-4a7d-8e94-0220b8ff6b15.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		isHidden
+		formatString: 0
+		lineageTag: a988c597-a676-4b6e-84d4-e539908653e8
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		isHidden
+		lineageTag: 293b8126-8c2b-46bd-9217-17880a781410
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		isHidden
+		formatString: 0
+		lineageTag: d0212dd8-5cdd-4fe3-b3e2-aaae750a81dd
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Month Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		isHidden
+		lineageTag: 736aeb6a-5805-4fa9-9f75-2e9a7ff46032
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Name]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Short Month'
+		isHidden
+		lineageTag: f6acd34a-a954-4ead-ab17-7f54c610b48e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Short Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year-Month
+		isHidden
+		lineageTag: 9c1074b2-f1d9-4e2d-ad9b-0012f5b62bf3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year-Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter-Year
+		isHidden
+		lineageTag: 7ab73d7e-4595-4ecf-8206-1a78f8fb9f7c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter-Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		isHidden
+		formatString: 0
+		lineageTag: 12e8eaf8-5b2d-4d13-b6dc-2876563507ba
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Day]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		isHidden
+		lineageTag: 1984edf4-571b-4f25-9315-4f2a8993ab41
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day Name]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Short Day'
+		isHidden
+		lineageTag: 437d961b-0221-4dcd-8d71-51057df5a130
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Short Day]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week'
+		isHidden
+		formatString: 0
+		lineageTag: e038e590-a1ba-4436-a2fa-eef360a57757
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Day of Week]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Number'
+		isHidden
+		formatString: 0
+		lineageTag: 2612feed-2200-4c9b-96dc-881561145563
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Week Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Weekend'
+		isHidden
+		lineageTag: 247bce83-d7b0-42c5-b0d4-6f097b2b847a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Is Weekend]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Start'
+		isHidden
+		formatString: General Date
+		lineageTag: 9325eb27-c0ad-400b-b7da-e388a4ea956e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Start]
+
+		variation Variation
+			isDefault
+			relationship: 1f8d08cb-d007-4767-9cd2-d42adb9d5e9f
+			defaultHierarchy: LocalDateTable_a3ea237f-0c68-4eb0-ac4d-38d2dc980e32.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month End'
+		isHidden
+		formatString: General Date
+		lineageTag: 0d86be65-f16b-470a-97ea-7843335c054d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month End]
+
+		variation Variation
+			isDefault
+			relationship: 0a10dcca-4fb6-477e-9d85-7946adaca100
+			defaultHierarchy: LocalDateTable_a585a856-4ab3-4012-9b0c-db3040cd099d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Start'
+		isHidden
+		formatString: General Date
+		lineageTag: 08aa75fb-e47f-458a-8edf-75db7a287610
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Start]
+
+		variation Variation
+			isDefault
+			relationship: 602ed034-5c17-48db-b6f6-233a08583936
+			defaultHierarchy: LocalDateTable_97498dac-d441-4175-8e9b-1791f874ad53.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year End'
+		isHidden
+		formatString: General Date
+		lineageTag: 8dcc6938-57e2-4000-adb6-db980759c436
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year End]
+
+		variation Variation
+			isDefault
+			relationship: 3dc33a1a-5364-4b48-b8d3-bceb3ad79e76
+			defaultHierarchy: LocalDateTable_0fd499fc-4e33-4553-9fdb-bd681196b51c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _ = calculated
+		mode: import
+		source = ```
+				
+				VAR MinDate = MIN(Sales[OrderDate])
+				VAR MaxDate = MAX(Sales[OrderDate])
+				
+				RETURN
+				ADDCOLUMNS(
+				    CALENDAR(MinDate, MaxDate),
+				
+				    "Year", YEAR([Date]),
+				    "Quarter", "Q" & FORMAT([Date], "Q"),
+				    "Month Number", MONTH([Date]),
+				    "Month Name", FORMAT([Date], "MMMM"),
+				    "Short Month", FORMAT([Date], "MMM"),
+				    "Year-Month", FORMAT([Date], "YYYY-MM"),
+				    "Quarter-Year", "Q" & FORMAT([Date], "Q") & "-" & YEAR([Date]),
+				    "Day", DAY([Date]),
+				    "Day Name", FORMAT([Date], "DDDD"),
+				    "Short Day", FORMAT([Date], "DDD"),
+				    "Day of Week", WEEKDAY([Date], 2),
+				    "Week Number", WEEKNUM([Date], 2),
+				    "Is Weekend", IF(WEEKDAY([Date], 2) > 5, "Yes", "No"),
+				    "Month Start", DATE(YEAR([Date]), MONTH([Date]), 1),
+				    "Month End", EOMONTH([Date], 0),
+				    "Year Start", DATE(YEAR([Date]), 1, 1),
+				    "Year End", DATE(YEAR([Date]), 12, 31)
+				)
+				
+				```
+
+	annotation PBI_Id = 9d9f0173e2bf448bb546ccbeaa134a4e
+
